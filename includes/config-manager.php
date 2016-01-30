@@ -20,7 +20,7 @@ class blcConfigurationManager {
 	 */
 	public $db_option_loaded = false;
 	
-	function blcConfigurationManager( $option_name = '', $default_settings = null ){
+	function __construct( $option_name = '', $default_settings = null ){
 		$this->option_name = $option_name;
 		
 		if ( is_array($default_settings) ){
