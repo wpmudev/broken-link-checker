@@ -37,7 +37,7 @@ class wsBrokenLinkChecker {
    * @param blcConfigurationManager $conf An instance of the configuration manager
    * @return void
    */
-    function wsBrokenLinkChecker ( $loader, $conf ) {
+    function __construct ( $loader, $conf ) {
 		$this->db_version = BLC_DATABASE_VERSION;
         
         $this->conf = $conf;
