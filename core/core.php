@@ -14,6 +14,8 @@ if ( !function_exists( 'microtime_float' ) ) {
 require BLC_DIRECTORY . '/includes/screen-options/screen-options.php';
 require BLC_DIRECTORY . '/includes/screen-meta-links.php';
 require BLC_DIRECTORY . '/includes/wp-mutex.php';
+require BLC_DIRECTORY . '/includes/query-manager.php';
+require BLC_DIRECTORY . '/includes/transactions-manager.php';
 
 if (!class_exists('wsBrokenLinkChecker')) {
 
