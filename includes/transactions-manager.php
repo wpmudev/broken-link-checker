@@ -9,11 +9,7 @@ class TransactionManager
     {
         global $wpdb;
 
-        if (!$this->isTransactionStarted) {
-
-            $wpdb->query('BEGIN');
-            $this->isTransactionStarted = true;
-        }
+        $wpdb->query('BEGIN');
 
     }
 
