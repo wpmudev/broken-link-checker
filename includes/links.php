@@ -530,7 +530,6 @@ class blcLink {
 		
 		if ( $this->is_new ){
 
-
             TransactionManager::getInstance()->commit();
 
 			//BUG: Technically, there should be a 'LOCK TABLES wp_blc_links WRITE' here. In fact,
@@ -578,7 +577,8 @@ class blcLink {
 			return $rez;
 									
 		} else {
-			
+
+            TransactionManager::getInstance()->commit();
 			//Generate the field = dbvalue expressions 
 			$set_exprs = array();
 			foreach($values as $name => $value){
