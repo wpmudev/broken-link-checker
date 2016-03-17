@@ -240,6 +240,7 @@ class blcContainer {
    * @return void
    */
 	function synch(){
+		global $wpdb;
 		//FB::log("Parsing {$this->container_type}[{$this->container_id}]");
 		
 		//Remove any existing link instance records associated with the container
@@ -274,17 +275,31 @@ class blcContainer {
 				//FB::log("Parsing $name with '{$parser->parser_type}' parser");
 				$found_instances = $parser->parse( $value, $base_url, $default_link_text );
 				//FB::log($found_instances, "Found instances");
-				
+				$instanceManager = new QueryManager();
+
 				//Complete the link instances by adding container info, then save them to the DB.
 				foreach($found_instances as $instance){
 					$instance->set_container($this, $name);
-					$instance->save(); 
+					$instance->getQuery($instance);
+
+					$instanceManager->addInstance($instance);
 				}
+
+				$transactionManager = TransactionManager::getInstance();
+				$transactionManager->startTransaction();
+
+				try {
+					$transactionManager->commit($instanceManager);
+				} catch(Exception $e){
+					$transactionManager->rollBack();
+				}
+
+				$instanceManager->clearQueries();
 			}
-		}
-		
-		$this->mark_as_synched();
-	}
+        }
+
+        $this->mark_as_synched();
+    }
 	
   /**
    * Mark the container as successfully synchronized (parsed for links).
@@ -386,7 +401,7 @@ class blcContainer {
    */
 	function delete_instances(){
 		global $wpdb; /* @var wpdb $wpdb */
-		
+
 		//Remove instances associated with this container
 		$q = "DELETE FROM {$wpdb->prefix}blc_instances 
 			  WHERE container_id = %d AND container_type = %s";
