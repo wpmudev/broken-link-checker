@@ -292,7 +292,7 @@ class blcLinkInstance {
 
 			$rez = $wpdb->query($q) !== false;
 
-			if ($rez) {
+			if ($rez){
 				//FB::info($this, "Instance updated");
 			} else {
 				//FB::error("DB error while updating instance {$this->instance_id} : {$wpdb->last_error}");

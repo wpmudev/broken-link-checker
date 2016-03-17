@@ -2572,7 +2572,7 @@ class wsBrokenLinkChecker {
         		if ( !$this->is_excluded( $link->url ) ) {
         			//Check the link.
         			//FB::log($link->url, "Checking link {$link->link_id}");
-					$link->check( true, $queryManager);
+					$link->check( true );
 				} else {
 					//FB::info("The URL {$link->url} is excluded, skipping link {$link->link_id}.");
 					$link->last_check_attempt = time();

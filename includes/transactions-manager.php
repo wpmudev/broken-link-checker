@@ -18,10 +18,11 @@ class TransactionManager
     {
         global $wpdb;
 
-        if ($this->isTransactionStarted) {
-            $wpdb->query('COMMIT');
-            $this->isTransactionStarted = false;
+        if (!$this->isTransactionStarted) {
+            $wpdb->query('BEGIN');
         }
+        $wpdb->query('COMMIT');
+        $this->isTransactionStarted = false;
     }
 
     public function rollback()
