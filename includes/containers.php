@@ -240,7 +240,6 @@ class blcContainer {
    * @return void
    */
 	function synch(){
-		global $wpdb;
 		//FB::log("Parsing {$this->container_type}[{$this->container_id}]");
 		
 		//Remove any existing link instance records associated with the container
@@ -275,18 +274,16 @@ class blcContainer {
 				//FB::log("Parsing $name with '{$parser->parser_type}' parser");
 				$found_instances = $parser->parse( $value, $base_url, $default_link_text );
 				//FB::log($found_instances, "Found instances");
-				$instanceManager = new QueryManager();
+
+				$transactionManager = TransactionManager::getInstance();
+				$transactionManager->start();
 
 				//Complete the link instances by adding container info, then save them to the DB.
 				foreach($found_instances as $instance){
 					$instance->set_container($this, $name);
-					$instance->getQuery($instance);
+					$instance->save();
 
-					$instanceManager->addInstance($instance);
 				}
-
-				$transactionManager = TransactionManager::getInstance();
-				$transactionManager->startTransaction();
 
 				try {
 					$transactionManager->commit($instanceManager);
@@ -294,7 +291,6 @@ class blcContainer {
 					$transactionManager->rollBack();
 				}
 
-				$instanceManager->clearQueries();
 			}
         }
 

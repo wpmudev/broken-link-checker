@@ -196,7 +196,13 @@ class blcLinkInstance {
 		}
 	}
 
-	function getQuery() {
+  /**
+   * Store the link instance in the database.
+   * Saving the instance will also implicitly save the link record associated with it, if it wasn't already saved.
+   *
+   * @return bool TRUE on success, FALSE on error
+   */
+	function save(){
 		global $wpdb; /** @var wpdb $wpdb */
 
 		//Refresh the locally cached link & container properties, in case
@@ -243,7 +249,15 @@ class blcLinkInstance {
 				$this->raw_url
 			);
 
-			return $q;
+			$rez = $wpdb->query($q) !== false;
+
+			if ($rez){
+				$this->instance_id = $wpdb->insert_id;
+				//If the instance was successfully saved then it's no longer "new".
+				$this->is_new = !$rez;
+			}
+
+ 			return $rez;
 
 		} else {
 
@@ -276,31 +290,15 @@ class blcLinkInstance {
 				$this->instance_id
 			);
 
-			return $q;
-
-		}
-	}
-
-  /**
-   * Store the link instance in the database. 
-   * Saving the instance will also implicitly save the link record associated with it, if it wasn't already saved.
-   *
-   * @return bool TRUE on success, FALSE on error
-   */
-	function save(){
-		global $wpdb;
-		$q = $this->getQuery();
-				
 			$rez = $wpdb->query($q) !== false;
-			
-			if ($rez && !$this->instance_id){
-				$this->instance_id = $wpdb->insert_id;
-				//If the instance was successfully saved then it's no longer "new".
-				$this->is_new = !$rez;
-			}
-				
-			return $rez;
 
+			if ($rez) {
+				//FB::info($this, "Instance updated");
+			} else {
+				//FB::error("DB error while updating instance {$this->instance_id} : {$wpdb->last_error}");
+			}
+			return $rez;
+		}
 	}
 	
   /**

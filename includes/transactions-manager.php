@@ -2,28 +2,24 @@
 
 class TransactionManager
 {
-    public $isTransactionStarted = false;
+    private $isTransactionStarted = false;
     static private $instance;
 
-    public function startTransaction()
+    public function start()
     {
         global $wpdb;
 
-        $wpdb->query('BEGIN', $wpdb->dbh);
+        $wpdb->query('BEGIN');
         $this->isTransactionStarted = true;
 
     }
 
-    public function commit(QueryManager $queryManager)
+    public function commit()
     {
         global $wpdb;
 
         if ($this->isTransactionStarted) {
-            foreach ($queryManager->getQueries() as $query) {
-                $wpdb->query($query);
-            }
-
-            $wpdb->query('COMMIT', $wpdb->db);
+            $wpdb->query('COMMIT');
             $this->isTransactionStarted = false;
         }
     }
@@ -32,7 +28,7 @@ class TransactionManager
     {
         global $wpdb;
 
-        $wpdb->query('ROLLBACK', $wpdb->db);
+        $wpdb->query('ROLLBACK');
     }
 
     static public function getInstance()

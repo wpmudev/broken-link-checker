@@ -14,7 +14,6 @@ if ( !function_exists( 'microtime_float' ) ) {
 require BLC_DIRECTORY . '/includes/screen-options/screen-options.php';
 require BLC_DIRECTORY . '/includes/screen-meta-links.php';
 require BLC_DIRECTORY . '/includes/wp-mutex.php';
-require BLC_DIRECTORY . '/includes/query-manager.php';
 require BLC_DIRECTORY . '/includes/transactions-manager.php';
 
 if (!class_exists('wsBrokenLinkChecker')) {
@@ -39,7 +38,7 @@ class wsBrokenLinkChecker {
    * @param blcConfigurationManager $conf An instance of the configuration manager
    * @return void
    */
-    function __construct ( $loader, $conf ) {
+    function wsBrokenLinkChecker ( $loader, $conf ) {
 		$this->db_version = BLC_DATABASE_VERSION;
         
         $this->conf = $conf;
@@ -2369,7 +2368,6 @@ class wsBrokenLinkChecker {
    */
 	function work(){
 		global $blclog;
-		global $wpdb;
 
 		//Close the session to prevent lock-ups.
 		//PHP sessions are blocking. session_start() will wait until all other scripts that are using the same session
@@ -2565,10 +2563,8 @@ class wsBrokenLinkChecker {
 			//Randomizing the array reduces the chances that we'll get several links to the same domain in a row.
 			shuffle($links);
 
-			$queryManager = new QueryManager();
-
 			$transactionManager = TransactionManager::getInstance();
-			$transactionManager->startTransaction();
+			$transactionManager->start();
 
 			foreach ($links as $link) {
 				//Does this link need to be checked? Excluded links aren't checked, but their URLs are still
@@ -2581,8 +2577,6 @@ class wsBrokenLinkChecker {
 					//FB::info("The URL {$link->url} is excluded, skipping link {$link->link_id}.");
 					$link->last_check_attempt = time();
 					$link->save();
-
-					$queryManager->addLink($link);
 			}
 				
 				//Check if we still have some execution time left
@@ -2603,12 +2597,10 @@ class wsBrokenLinkChecker {
 			}
 
 			try {
-				$transactionManager->commit($queryManager);
+				$transactionManager->commit();
 			} catch(Exception $e){
 				$transactionManager->rollBack();
 			}
-
-			$queryManager->clearQueries();
 
 			$start = microtime(true);
 			$links = $this->get_links_to_check($max_links_per_query);
@@ -3215,7 +3207,6 @@ class wsBrokenLinkChecker {
 
 		//Check the link and save the results.
 		$link->check(true);
-		$queryManager->addLink($link);
 
 		$status = $link->analyse_status();
 		$response = array(

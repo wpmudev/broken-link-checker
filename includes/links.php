@@ -204,7 +204,7 @@ class blcLink {
    * @param bool $save_results Automatically save the results of the check. 
    * @return bool 
    */
-	function check( $save_results = true, $queryManager ){
+	function check( $save_results = true ){
 		if ( !$this->valid() ) return false;
 		
 		$this->last_check_attempt = time();
@@ -228,7 +228,6 @@ class blcLink {
         	
         	if ( $save_results ){
 				$this->save();
-				$queryManager->addLink($this);
 			}
 
 			return false;
@@ -237,12 +236,13 @@ class blcLink {
         $this->being_checked = true;
         $this->check_count++;
 
-		if ( $save_results ) {			//Update the DB record before actually performing the check.
+		if ( $save_results ) {
+
+			//Update the DB record before actually performing the check.
 			//Useful if something goes terribly wrong while checking this particular URL
 			//(e.g. the server might kill the script for running over the exec. time limit).
 			//Note : might be unnecessary.
 			$this->save();
-			$queryManager->addLink($this);
        }
         
         $defaults = array(
@@ -272,7 +272,6 @@ class blcLink {
 						
 			if ( $save_results ){
 				$this->save();
-				$queryManager->addLink($this);
 			}
 			
 			return true;
@@ -304,7 +303,6 @@ class blcLink {
 		//Save results to the DB 
 		if($save_results){
 			$this->save();
-			$queryManager->addLink($this);
 		}
 		
 		return $this->broken;
@@ -533,13 +531,11 @@ class blcLink {
 		if ( $this->is_new ){
 
 			$transactionManager = TransactionManager::getInstance();
-			$queryManager = new QueryManager();
 			try {
-				$transactionManager->commit($queryManager);
+				$transactionManager->commit();
 			} catch(Exception $e){
 				$transactionManager->rollBack();
 			}
-			$queryManager->clearQueries();
 			//BUG: Technically, there should be a 'LOCK TABLES wp_blc_links WRITE' here. In fact,
 			//the plugin should probably lock all involved tables whenever it parses something, lest
 			//the user (ot another plugin) modify the thing being parsed while we're working.
@@ -601,8 +597,17 @@ class blcLink {
 			);
 			//FB::log($q, 'Link update query');
 			$blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Updating a link. SQL query:'. "\n", $q);
-			
-			return $q;
+
+            $rez = $wpdb->query($q) !== false;
+            if ( $rez ){
+                //FB::log($this->link_id, "Link updated");
+                $blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Link updated.');
+            } else {
+                $blclog->error(__CLASS__ .':' . __FUNCTION__ . ' Error updating link', $this->url);
+                //FB::error($wpdb->last_error, "Error updating link {$this->url}");
+            }
+
+ 			return $rez;
 		}
 	}
 	

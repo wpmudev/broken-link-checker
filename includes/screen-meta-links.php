@@ -28,7 +28,7 @@ class wsScreenMetaLinks11 {
 	 * 
 	 * @return void
 	 */
-	function __construct(){
+	function wsScreenMetaLinks11(){
 		$this->registered_links = array();
 		
 		add_action('admin_notices', array(&$this, 'append_meta_links'));
