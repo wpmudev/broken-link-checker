@@ -2595,12 +2595,7 @@ class wsBrokenLinkChecker {
 					return;
 				}
 			}
-
-			try {
-				$transactionManager->commit();
-			} catch(Exception $e){
-				$transactionManager->rollBack();
-			}
+            $transactionManager->commit();
 
 			$start = microtime(true);
 			$links = $this->get_links_to_check($max_links_per_query);

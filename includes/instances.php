@@ -237,11 +237,11 @@ class blcLinkInstance {
 			VALUES( %d,      %s,             %d,           %s,              %s,          %s,        %s,           %s      )";
 
 			$q = $wpdb->prepare(
-				$q,
+                $q,
 
 				$this->link_id,
 				$this->container_type,
-				$this->container_id,
+                $this->container_id,
 				$this->container_field,
 				$this->parser_type,
 				$this->link_text,
@@ -263,14 +263,14 @@ class blcLinkInstance {
 
 			$q = "UPDATE {$wpdb->prefix}blc_instances
 
-				  SET
-				     link_id = %d,
-					 container_type = %s,
-					 container_id = %d,
-					 container_field = %s,
-					 parser_type = %s,
-					 link_text = %s,
-					 link_context = %s,
+ 				  SET
+ 				     link_id = %d,
+ 					 container_type = %s,
+ 					 container_id = %d,
+ 					 container_field = %s,
+ 					 parser_type = %s,
+ 					 link_text = %s,
+ 					 link_context = %s,
 					 raw_url = %s
 
 				  WHERE instance_id = %d";

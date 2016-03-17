@@ -9,8 +9,11 @@ class TransactionManager
     {
         global $wpdb;
 
-        $wpdb->query('BEGIN');
-        $this->isTransactionStarted = true;
+        if (!$this->isTransactionStarted) {
+
+            $wpdb->query('BEGIN');
+            $this->isTransactionStarted = true;
+        }
 
     }
 
@@ -21,15 +24,13 @@ class TransactionManager
         if (!$this->isTransactionStarted) {
             $wpdb->query('BEGIN');
         }
-        $wpdb->query('COMMIT');
-        $this->isTransactionStarted = false;
-    }
 
-    public function rollback()
-    {
-        global $wpdb;
-
-        $wpdb->query('ROLLBACK');
+        try {
+            $wpdb->query('COMMIT');
+            $this->isTransactionStarted = false;
+        } catch (Exception $e) {
+            $wpdb->query('ROLLBACK');
+        }
     }
 
     static public function getInstance()

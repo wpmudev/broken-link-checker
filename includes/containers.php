@@ -285,11 +285,7 @@ class blcContainer {
 
 				}
 
-				try {
-					$transactionManager->commit();
-				} catch(Exception $e){
-					$transactionManager->rollBack();
-				}
+				$transactionManager->commit();
 
 			}
         }

@@ -530,12 +530,9 @@ class blcLink {
 		
 		if ( $this->is_new ){
 
-			$transactionManager = TransactionManager::getInstance();
-			try {
-				$transactionManager->commit();
-			} catch(Exception $e){
-				$transactionManager->rollBack();
-			}
+
+            TransactionManager::getInstance()->commit();
+
 			//BUG: Technically, there should be a 'LOCK TABLES wp_blc_links WRITE' here. In fact,
 			//the plugin should probably lock all involved tables whenever it parses something, lest
 			//the user (ot another plugin) modify the thing being parsed while we're working.
