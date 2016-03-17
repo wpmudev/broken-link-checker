@@ -39,7 +39,7 @@ class wsBrokenLinkChecker {
    * @param blcConfigurationManager $conf An instance of the configuration manager
    * @return void
    */
-    function wsBrokenLinkChecker ( $loader, $conf ) {
+    function __construct ( $loader, $conf ) {
 		$this->db_version = BLC_DATABASE_VERSION;
         
         $this->conf = $conf;
@@ -2369,6 +2369,7 @@ class wsBrokenLinkChecker {
    */
 	function work(){
 		global $blclog;
+		global $wpdb;
 
 		//Close the session to prevent lock-ups.
 		//PHP sessions are blocking. session_start() will wait until all other scripts that are using the same session
@@ -2563,19 +2564,26 @@ class wsBrokenLinkChecker {
 
 			//Randomizing the array reduces the chances that we'll get several links to the same domain in a row.
 			shuffle($links);
-			
+
+			$queryManager = new QueryManager();
+
+			$transactionManager = TransactionManager::getInstance();
+			$transactionManager->startTransaction();
+
 			foreach ($links as $link) {
 				//Does this link need to be checked? Excluded links aren't checked, but their URLs are still
 				//tested periodically to see if they're still on the exclusion list.
         		if ( !$this->is_excluded( $link->url ) ) {
         			//Check the link.
         			//FB::log($link->url, "Checking link {$link->link_id}");
-					$link->check( true );
+					$link->check( true, $queryManager);
 				} else {
 					//FB::info("The URL {$link->url} is excluded, skipping link {$link->link_id}.");
 					$link->last_check_attempt = time();
 					$link->save();
-				}
+
+					$queryManager->addLink($link);
+			}
 				
 				//Check if we still have some execution time left
 				if( $this->execution_time() > $max_execution_time ){
@@ -2593,6 +2601,14 @@ class wsBrokenLinkChecker {
 					return;
 				}
 			}
+
+			try {
+				$transactionManager->commit($queryManager);
+			} catch(Exception $e){
+				$transactionManager->rollBack();
+			}
+
+			$queryManager->clearQueries();
 
 			$start = microtime(true);
 			$links = $this->get_links_to_check($max_links_per_query);
@@ -2696,26 +2712,6 @@ class wsBrokenLinkChecker {
                     AND ( instances.parser_type IN ({$loaded_parsers}) )
                 ";
 
-//		$q .= "FROM {$wpdb->prefix}blc_links AS links
-//		      WHERE
-//		      	(
-//				  	( last_check_attempt < %s )
-//					OR
-//			 	  	(
-//						(broken = 1 OR being_checked = 1)
-//						AND may_recheck = 1
-//						AND check_count < %d
-//						AND last_check_attempt < %s
-//					)
-//				)
-//				AND EXISTS (
-//					SELECT 1 FROM {$wpdb->prefix}blc_instances AS instances
-//					WHERE
-//						instances.link_id = links.link_id
-//						AND ( instances.container_type IN ({$loaded_containers}) )
-//						AND ( instances.parser_type IN ({$loaded_parsers}) )
-//				)
-//			";
 		if ( !$count_only ){
 			$q .= "\nORDER BY last_check_attempt ASC\n";
 			if ( !empty($max_results) ){
@@ -3218,6 +3214,7 @@ class wsBrokenLinkChecker {
 
 		//Check the link and save the results.
 		$link->check(true);
+		$queryManager->addLink($link);
 
 		$status = $link->analyse_status();
 		$response = array(

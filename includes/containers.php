@@ -285,22 +285,16 @@ class blcContainer {
 					$instanceManager->addInstance($instance);
 				}
 
-				$transactionManager = new TransactionManager();
+				$transactionManager = TransactionManager::getInstance();
 				$transactionManager->startTransaction();
 
-				foreach ($instanceManager->getQueries() as $query){
-					$wpdb->query($query);
-				}
-
 				try {
-					$transactionManager->commit();
+					$transactionManager->commit($instanceManager);
 				} catch(Exception $e){
 					$transactionManager->rollBack();
 				}
 
 				$instanceManager->clearQueries();
-//				$time_end = microtime(true);
-//				$time = $time_end - $time_start;
 			}
         }
 

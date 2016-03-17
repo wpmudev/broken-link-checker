@@ -1,20 +1,46 @@
 <?php
 
-class TransactionManager{
+class TransactionManager
+{
+    public $isTransactionStarted = false;
+    static private $instance;
 
-    public function startTransaction(){
+    public function startTransaction()
+    {
         global $wpdb;
-        mysqli_query('BEGIN', $wpdb->dbh);
+
+        $wpdb->query('BEGIN', $wpdb->dbh);
+        $this->isTransactionStarted = true;
 
     }
-    public function commit(){
+
+    public function commit(QueryManager $queryManager)
+    {
         global $wpdb;
 
-        mysqli_query('COMMIT', $wpdb->db);
+        if ($this->isTransactionStarted) {
+            foreach ($queryManager->getQueries() as $query) {
+                $wpdb->query($query);
+            }
+
+            $wpdb->query('COMMIT', $wpdb->db);
+            $this->isTransactionStarted = false;
+        }
     }
-    public function rollback(){
+
+    public function rollback()
+    {
         global $wpdb;
 
-        mysqli_query('ROLLBACK', $wpdb->db);
+        $wpdb->query('ROLLBACK', $wpdb->db);
+    }
+
+    static public function getInstance()
+    {
+        if (empty(static::$instance)) {
+            static::$instance = new static();
+        }
+
+        return static::$instance;
     }
 }
