@@ -578,7 +578,7 @@ class blcLink {
 									
 		} else {
 
-            TransactionManager::getInstance()->commit();
+            TransactionManager::getInstance()->start();
 			//Generate the field = dbvalue expressions 
 			$set_exprs = array();
 			foreach($values as $name => $value){

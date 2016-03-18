@@ -9,23 +9,24 @@ class TransactionManager
     {
         global $wpdb;
 
-        $wpdb->query('BEGIN');
-
+        if (!$this->isTransactionStarted) {
+            $wpdb->query('BEGIN');
+            $this->isTransactionStarted = true;
+        }
     }
 
     public function commit()
     {
         global $wpdb;
 
-        if (!$this->isTransactionStarted) {
-            $wpdb->query('BEGIN');
-        }
+        $this->start();
 
         try {
             $wpdb->query('COMMIT');
             $this->isTransactionStarted = false;
         } catch (Exception $e) {
             $wpdb->query('ROLLBACK');
+            $this->isTransactionStarted = false;
         }
     }
 
