@@ -2577,7 +2577,7 @@ class wsBrokenLinkChecker {
 					//FB::info("The URL {$link->url} is excluded, skipping link {$link->link_id}.");
 					$link->last_check_attempt = time();
 					$link->save();
-			}
+				}
 				
 				//Check if we still have some execution time left
 				if( $this->execution_time() > $max_execution_time ){

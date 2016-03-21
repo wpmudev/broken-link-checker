@@ -195,21 +195,21 @@ class blcLinkInstance {
 			return false;
 		}
 	}
-
+	
   /**
-   * Store the link instance in the database.
+   * Store the link instance in the database. 
    * Saving the instance will also implicitly save the link record associated with it, if it wasn't already saved.
    *
    * @return bool TRUE on success, FALSE on error
    */
 	function save(){
 		global $wpdb; /** @var wpdb $wpdb */
-
-		//Refresh the locally cached link & container properties, in case
+		
+		//Refresh the locally cached link & container properties, in case 
 		//the objects have changed since they were set.
-
+		
 		if ( !is_null($this->_link) ){
-
+			
 			//If we have a link object assigned, but it's new, it won't have a DB ID yet.
 			//We need to save the link to get the ID and be able to maintain the link <-> instance
 			//association.
@@ -219,85 +219,87 @@ class blcLinkInstance {
 					return false;
 				}
 			}
-
+			
 			$this->link_id = $this->_link->link_id;
 		}
-
+		
 		if ( !is_null($this->_container) ){
 			$this->container_type = $this->_container->container_type;
 			$this->container_id = $this->_container->container_id;
 		}
-
-		//If the link is new, insert a new row into the DB. Otherwise update the existing row.
+		
+		//If the link is new, insert a new row into the DB. Otherwise update the existing row.		
 		if ( $this->is_new ){
-
+			
 			$q = "
 			INSERT INTO {$wpdb->prefix}blc_instances
 				  ( link_id, container_type, container_id, container_field, parser_type, link_text, link_context, raw_url )
 			VALUES( %d,      %s,             %d,           %s,              %s,          %s,        %s,           %s      )";
-
+			
 			$q = $wpdb->prepare(
-                $q,
-
-				$this->link_id,
-				$this->container_type,
-                $this->container_id,
+				$q, 
+				
+				$this->link_id, 
+				$this->container_type,  
+				$this->container_id,
 				$this->container_field,
 				$this->parser_type,
 				$this->link_text,
 				$this->link_context,
-				$this->raw_url
+				$this->raw_url 
 			);
-
+				
 			$rez = $wpdb->query($q) !== false;
-
+			
 			if ($rez){
 				$this->instance_id = $wpdb->insert_id;
 				//If the instance was successfully saved then it's no longer "new".
 				$this->is_new = !$rez;
 			}
-
- 			return $rez;
-
+				
+			return $rez;
+									
 		} else {
-
+			
 			$q = "UPDATE {$wpdb->prefix}blc_instances
-
- 				  SET
- 				     link_id = %d,
- 					 container_type = %s,
- 					 container_id = %d,
- 					 container_field = %s,
- 					 parser_type = %s,
- 					 link_text = %s,
- 					 link_context = %s,
+			 
+				  SET 
+				     link_id = %d, 
+					 container_type = %s, 
+					 container_id = %d, 
+					 container_field = %s, 
+					 parser_type = %s, 
+					 link_text = %s, 
+					 link_context = %s, 
 					 raw_url = %s
-
+					 
 				  WHERE instance_id = %d";
-
+				  
 			$q = $wpdb->prepare(
-				$q,
-
-				$this->link_id,
-				$this->container_type,
+				$q, 
+				
+				$this->link_id, 
+				$this->container_type,  
 				$this->container_id,
 				$this->container_field,
 				$this->parser_type,
 				$this->link_text,
 				$this->link_context,
 				$this->raw_url,
-
+				
 				$this->instance_id
 			);
-
+				
 			$rez = $wpdb->query($q) !== false;
-
+			
 			if ($rez){
 				//FB::info($this, "Instance updated");
 			} else {
 				//FB::error("DB error while updating instance {$this->instance_id} : {$wpdb->last_error}");
 			}
-			return $rez;
+			
+			return  $rez;
+						
 		}
 	}
 	

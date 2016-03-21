@@ -229,21 +229,21 @@ class blcLink {
         	if ( $save_results ){
 				$this->save();
 			}
-
-			return false;
-		}
-
+			
+            return false;
+        }
+        
         $this->being_checked = true;
         $this->check_count++;
-
+		
 		if ( $save_results ) {
-
-			//Update the DB record before actually performing the check.
-			//Useful if something goes terribly wrong while checking this particular URL
+			
+	        //Update the DB record before actually performing the check.
+	        //Useful if something goes terribly wrong while checking this particular URL 
 			//(e.g. the server might kill the script for running over the exec. time limit).
-			//Note : might be unnecessary.
-			$this->save();
-       }
+	        //Note : might be unnecessary.
+	        $this->save();
+        }
         
         $defaults = array(
         	'broken' => false,
@@ -594,17 +594,17 @@ class blcLink {
 			);
 			//FB::log($q, 'Link update query');
 			$blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Updating a link. SQL query:'. "\n", $q);
-
-            $rez = $wpdb->query($q) !== false;
-            if ( $rez ){
-                //FB::log($this->link_id, "Link updated");
-                $blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Link updated.');
-            } else {
-                $blclog->error(__CLASS__ .':' . __FUNCTION__ . ' Error updating link', $this->url);
-                //FB::error($wpdb->last_error, "Error updating link {$this->url}");
-            }
-
- 			return $rez;
+			
+			$rez = $wpdb->query($q) !== false;
+			if ( $rez ){
+				//FB::log($this->link_id, "Link updated");
+				$blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Link updated.');
+			} else {
+				$blclog->error(__CLASS__ .':' . __FUNCTION__ . ' Error updating link', $this->url);
+				//FB::error($wpdb->last_error, "Error updating link {$this->url}");
+			}
+			
+			return $rez;			
 		}
 	}
 	
