@@ -1846,21 +1846,21 @@ class wsBrokenLinkChecker {
 		//Unlink all selected links.
 		$message = '';
 		$msg_class = 'updated';
-
+			
 		check_admin_referer( 'bulk-action' );
-
-		if ( count($selected_links) > 0 ) {
-
+		
+		if ( count($selected_links) > 0 ) {	
+			
 			//Fetch all the selected links
 			$links = blc_get_links(array(
 				'link_ids' => $selected_links,
 				'purpose' => BLC_FOR_EDITING,
 			));
-
+			
 			if ( count($links) > 0 ) {
 				$processed_links = 0;
 				$failed_links = 0;
-
+				
 				//Unlink (delete) each one
 				foreach($links as $link){
 					$rez = $link->unlink();
@@ -1869,24 +1869,24 @@ class wsBrokenLinkChecker {
 					} else {
 						$processed_links++;
 					}
-				}
-
-				//This message is slightly misleading - it doesn't account for the fact that
+				}	
+				
+				//This message is slightly misleading - it doesn't account for the fact that 
 				//a link can be present in more than one post.
 				$message = sprintf(
 					_n(
 						'%d link removed',
 						'%d links removed',
-						$processed_links,
+						$processed_links, 
 						'broken-link-checker'
 					),
 					$processed_links
-				);
-
+				);			
+				
 				if ( $failed_links > 0 ) {
 					$message .= '<br>' . sprintf(
 						_n(
-							'Failed to remove %d link',
+							'Failed to remove %d link', 
 							'Failed to remove %d links',
 							$failed_links,
 							'broken-link-checker'
@@ -1897,14 +1897,14 @@ class wsBrokenLinkChecker {
 				}
 			}
 		}
-
+		
 		return array($message, $msg_class);
 	}
-
+	
   /**
    * Delete or trash posts, bookmarks and other items that contain any of the specified links.
-   *
-   * Will prefer moving stuff to trash to permanent deletion. If it encounters an item that
+   * 
+   * Will prefer moving stuff to trash to permanent deletion. If it encounters an item that 
    * can't be moved to the trash, it will skip that item by default.
    *
    * @param array $selected_links An array of link IDs
@@ -1914,25 +1914,25 @@ class wsBrokenLinkChecker {
 	function do_bulk_delete_sources($selected_links, $force_delete = false){
 		$message = '';
 		$msg_class = 'updated';
-
+		
 		//Delete posts, blogroll entries and any other link containers that contain any of the selected links.
 		//
 		//Note that once all containers containing a particular link have been deleted,
-		//there is no need to explicitly delete the link record itself. The hooks attached to
-		//the actions that execute when something is deleted (e.g. "post_deleted") will
-		//take care of that.
-
+		//there is no need to explicitly delete the link record itself. The hooks attached to 
+		//the actions that execute when something is deleted (e.g. "post_deleted") will 
+		//take care of that. 
+					
 		check_admin_referer( 'bulk-action' );
-
-		if ( count($selected_links) > 0 ) {
+		
+		if ( count($selected_links) > 0 ) {	
 			$messages = array();
-
+			
 			//Fetch all the selected links
 			$links = blc_get_links(array(
 				'link_ids' => $selected_links,
 				'load_instances' => true,
 			));
-
+			
 			//Make a list of all containers associated with these links, with each container
 			//listed only once.
 			$containers = array();
@@ -1943,7 +1943,7 @@ class wsBrokenLinkChecker {
 					$containers[$key] = array($instance->container_type, $instance->container_id);
 				}
 			}
-
+			
 			//Instantiate the containers
 			$containers = blcContainerHelper::get_containers($containers);
 
@@ -1954,18 +1954,18 @@ class wsBrokenLinkChecker {
 				if ( !$container->current_user_can_delete() ){
 					continue;
 				}
-
+				
 				if ( $force_delete ){
 					$rez = $container->delete_wrapped_object();
 				} else {
 					if ( $container->can_be_trashed() ){
 						$rez = $container->trash_wrapped_object();
 					} else {
-						$skipped[] = $container;
+						$skipped[] = $container; 
 						continue;
 					}
 				}
-
+				
 				if ( is_wp_error($rez) ){ /* @var WP_Error $rez */
 					//Record error messages for later display
 					$messages[] = $rez->get_error_message();
@@ -1980,7 +1980,7 @@ class wsBrokenLinkChecker {
 					}
 				}
 			}
-
+			
 			//Generate delete confirmation messages
 			foreach($deleted as $container_type => $number){
 				if ( $force_delete ){
@@ -1988,9 +1988,9 @@ class wsBrokenLinkChecker {
 				} else {
 					$messages[] = blcContainerHelper::ui_bulk_trash_message($container_type, $number);
 				}
-
+				
 			}
-
+			
 			//If some items couldn't be trashed, let the user know
 			if ( count($skipped) > 0 ){
 				$message = sprintf(
@@ -2009,10 +2009,10 @@ class wsBrokenLinkChecker {
 					);
 				}
 				$message .= '</ul>';
-
+				
 				$messages[] = $message;
 			}
-
+			
 			if ( count($messages) > 0 ){
 				$message = implode('<p>', $messages);
 			} else {
@@ -2020,10 +2020,10 @@ class wsBrokenLinkChecker {
 				$msg_class = 'error';
 			}
 		}
-
+		
 		return array($message, $msg_class);
 	}
-
+	
   /**
    * Mark multiple links as unchecked.
    *
@@ -2033,61 +2033,61 @@ class wsBrokenLinkChecker {
 	function do_bulk_recheck($selected_links){
 		/** @var wpdb $wpdb */
 		global $wpdb;
-
+		
 		$message = '';
 		$msg_class = 'updated';
 
 		check_admin_referer('bulk-action');
-
+		
 		if ( count($selected_links) > 0 ){
-			$q = "UPDATE {$wpdb->prefix}blc_links
-				  SET last_check_attempt = '0000-00-00 00:00:00'
+			$q = "UPDATE {$wpdb->prefix}blc_links 
+				  SET last_check_attempt = '0000-00-00 00:00:00' 
 				  WHERE link_id IN (".implode(', ', $selected_links).")";
 			$changes = $wpdb->query($q);
-
+			
 			$message = sprintf(
 				_n(
 					"%d link scheduled for rechecking",
 					"%d links scheduled for rechecking",
-					$changes,
+					$changes, 
 					'broken-link-checker'
 				),
 				$changes
 			);
 		}
-
+		
 		return array($message, $msg_class);
 	}
-
-
+	
+	
 	/**
 	 * Mark multiple links as not broken.
-	 *
+	 * 
 	 * @param array $selected_links An array of link IDs
 	 * @return array Confirmation nessage and the CSS class to use with that message.
 	 */
 	function do_bulk_discard($selected_links){
 		check_admin_referer( 'bulk-action' );
-
+		
 		$messages = array();
 		$msg_class = 'updated';
 		$processed_links = 0;
-
+		
 		if ( count($selected_links) > 0 ){
 			foreach($selected_links as $link_id){
 				//Load the link
 				$link = new blcLink( intval($link_id) );
-
+				
 				//Skip links that don't actually exist
 				if ( !$link->valid() ){
 					continue;
 				}
-
+				
 				//Skip links that weren't actually detected as broken
 				if ( !$link->broken && !$link->warning ){
 					continue;
 				}
-
+				
 				//Make it appear "not broken"
 				$link->broken = false;
 				$link->warning = false;
@@ -2095,7 +2095,7 @@ class wsBrokenLinkChecker {
 				$link->last_check_attempt = time();
 				$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
 
-                $link->isChangeOptionsLink = true;
+        			$link->isOptionLinkChanged = true;
 				//Save the changes
 				if ( $link->save() ){
 					$processed_links++;
@@ -2108,19 +2108,19 @@ class wsBrokenLinkChecker {
 				}
 			}
 		}
-
+		
 		if ( $processed_links > 0 ){
 			$messages[] = sprintf(
 				_n(
 					'%d link marked as not broken',
 					'%d links marked as not broken',
-					$processed_links,
+					$processed_links, 
 					'broken-link-checker'
 				),
 				$processed_links
 			);
 		}
-
+		
 		return array(implode('<br>', $messages), $msg_class);
 	}
 
@@ -2154,7 +2154,7 @@ class wsBrokenLinkChecker {
 
 				$link->dismissed = true;
 
-                $link->isChangeOptionsLink = true;
+        			$link->isOptionLinkChanged = true;
 				//Save the changes
 				if ( $link->save() ){
 					$processed_links++;
@@ -2182,7 +2182,7 @@ class wsBrokenLinkChecker {
 
 		return array(implode('<br>', $messages), $msg_class);
 	}
-
+	
     
 	/**
 	 * Enqueue CSS files for the "Broken Links" page
@@ -2916,7 +2916,7 @@ class wsBrokenLinkChecker {
 			$link->last_check_attempt = time();
 			$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
 
-            $link->isChangeOptionsLink = true;
+    			$link->isOptionLinkChanged = true;
 			//Save the changes
 			if ( $link->save() ){
 				die( "OK" );
@@ -2955,7 +2955,7 @@ class wsBrokenLinkChecker {
 			$link->dismissed = $dismiss;
 
 			//Save the changes
-            $link->isChangeOptionsLink = true;
+    			$link->isOptionLinkChanged = true;
 			if ( $link->save() ){
 				die( "OK" );
 			} else {
@@ -3202,7 +3202,7 @@ class wsBrokenLinkChecker {
 
 		//In case the immediate check fails, this will ensure the link is checked during the next work() run.
 		$link->last_check_attempt = 0;
-        $link->isChangeOptionsLink = true;
+		$link->isOptionLinkChanged = true;
 		$link->save();
 
 		//Check the link and save the results.

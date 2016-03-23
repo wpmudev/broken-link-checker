@@ -105,7 +105,7 @@ class blcLink {
         509=>'Bandwidth Limit Exceeded',
         510=>'Not Extended',
 	);
-	var $isChangeOptionsLink = false;
+	var $isOptionLinkChanged = false;
 	function __construct($arg = null){
 		global $wpdb, $blclog; /** @var wpdb $wpdb  */
 		
@@ -530,7 +530,7 @@ class blcLink {
 		
 		if ( $this->is_new ){
 
-            TransactionManager::getInstance()->commit();
+    			TransactionManager::getInstance()->commit();
 
 			//BUG: Technically, there should be a 'LOCK TABLES wp_blc_links WRITE' here. In fact,
 			//the plugin should probably lock all involved tables whenever it parses something, lest
@@ -577,37 +577,36 @@ class blcLink {
 			return $rez;
 									
 		} else {
-			if ($this->isAjaxChangeOptions !== true ) {
-
-//			}
-                TransactionManager::getInstance()->start();
-            }
-            //Generate the field = dbvalue expressions
-            $set_exprs = array();
-            foreach($values as $name => $value){
-                $set_exprs[] = "$name = $value";
-            }
-            $set_exprs = implode(', ', $set_exprs);
-
-            //Update an existing DB record
-            $q = sprintf(
-                "UPDATE {$wpdb->prefix}blc_links SET %s WHERE link_id=%d",
-                $set_exprs,
-                intval($this->link_id)
-            );
-            //FB::log($q, 'Link update query');
-            $blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Updating a link. SQL query:'. "\n", $q);
-
-            $rez = $wpdb->query($q) !== false;
-            if ( $rez ){
-                //FB::log($this->link_id, "Link updated");
-                $blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Link updated.');
-            } else {
-                $blclog->error(__CLASS__ .':' . __FUNCTION__ . ' Error updating link', $this->url);
-                //FB::error($wpdb->last_error, "Error updating link {$this->url}");
-            }
-
-            return $rez;
+			if ($this->isOptionLinkChanged !== true ) {
+				TransactionManager::getInstance()->start();
+			}
+			$this->isOptionLinkChanged = false;
+			//Generate the field = dbvalue expressions 
+			$set_exprs = array();
+			foreach($values as $name => $value){
+				$set_exprs[] = "$name = $value";
+			}
+			$set_exprs = implode(', ', $set_exprs);
+			
+			//Update an existing DB record
+			$q = sprintf(
+				"UPDATE {$wpdb->prefix}blc_links SET %s WHERE link_id=%d",
+				$set_exprs,
+				intval($this->link_id)
+			);
+			//FB::log($q, 'Link update query');
+			$blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Updating a link. SQL query:'. "\n", $q);
+			
+			$rez = $wpdb->query($q) !== false;
+			if ( $rez ){
+				//FB::log($this->link_id, "Link updated");
+				$blclog->debug(__CLASS__ .':' . __FUNCTION__ . ' Link updated.');
+			} else {
+				$blclog->error(__CLASS__ .':' . __FUNCTION__ . ' Error updating link', $this->url);
+				//FB::error($wpdb->last_error, "Error updating link {$this->url}");
+			}
+			
+			return $rez;			
 		}
 	}
 	
