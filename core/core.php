@@ -2671,30 +2671,29 @@ class wsBrokenLinkChecker {
 		//I could put an index on last_check_attempt, but that value is almost 
 		//certainly unique for each row so it wouldn't be much better than a full table scan.
 		if ( $count_only ){
-			$q = "SELECT COUNT(links.link_id)\n";
+			$q = "SELECT COUNT(DISTINCT links.link_id)\n";
 		} else {
-			$q = "SELECT links.*\n";
+			$q = "SELECT DISTINCT links.*\n";
 		}
 		$q .= "FROM {$wpdb->prefix}blc_links AS links
-		      WHERE 
-		      	(
-				  	( last_check_attempt < %s ) 
-					OR 
-			 	  	( 
-						(broken = 1 OR being_checked = 1) 
-						AND may_recheck = 1
-						AND check_count < %d 
-						AND last_check_attempt < %s 
-					)
-				)
-				AND EXISTS (
-					SELECT 1 FROM {$wpdb->prefix}blc_instances AS instances
-					WHERE 
-						instances.link_id = links.link_id
-						AND ( instances.container_type IN ({$loaded_containers}) )
-						AND ( instances.parser_type IN ({$loaded_parsers}) )
-				)
-			";
+            INNER JOIN {$wpdb->prefix}blc_instances AS instances USING(link_id)
+            WHERE
+                (
+                    ( last_check_attempt < %s )
+                    OR
+                    (
+                        (broken = 1 OR being_checked = 1)
+                        AND may_recheck = 1
+                        AND check_count < %d
+                        AND last_check_attempt < %s
+                    )
+                )
+
+            AND
+                ( instances.container_type IN ({$loaded_containers}) )
+                AND ( instances.parser_type IN ({$loaded_parsers}) )
+            ";
+
 		if ( !$count_only ){
 			$q .= "\nORDER BY last_check_attempt ASC\n";
 			if ( !empty($max_results) ){
