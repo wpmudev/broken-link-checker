@@ -38,7 +38,7 @@ class wsBrokenLinkChecker {
    * @param blcConfigurationManager $conf An instance of the configuration manager
    * @return void
    */
-    function wsBrokenLinkChecker ( $loader, $conf ) {
+    function __construct ( $loader, $conf ) {
 		$this->db_version = BLC_DATABASE_VERSION;
         
         $this->conf = $conf;
@@ -2095,7 +2095,7 @@ class wsBrokenLinkChecker {
 				$link->last_check_attempt = time();
 				$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
 
-        			$link->isOptionLinkChanged = true;
+				$link->isOptionLinkChanged = true;
 				//Save the changes
 				if ( $link->save() ){
 					$processed_links++;
@@ -2154,7 +2154,7 @@ class wsBrokenLinkChecker {
 
 				$link->dismissed = true;
 
-        			$link->isOptionLinkChanged = true;
+				$link->isOptionLinkChanged = true;
 				//Save the changes
 				if ( $link->save() ){
 					$processed_links++;
@@ -2678,30 +2678,29 @@ class wsBrokenLinkChecker {
 		//I could put an index on last_check_attempt, but that value is almost 
 		//certainly unique for each row so it wouldn't be much better than a full table scan.
 		if ( $count_only ){
-			$q = "SELECT COUNT(links.link_id)\n";
+			$q = "SELECT COUNT(DISTINCT links.link_id)\n";
 		} else {
-			$q = "SELECT links.*\n";
+			$q = "SELECT DISTINCT links.*\n";
 		}
 		$q .= "FROM {$wpdb->prefix}blc_links AS links
-		      WHERE 
-		      	(
-				  	( last_check_attempt < %s ) 
-					OR 
-			 	  	( 
-						(broken = 1 OR being_checked = 1) 
-						AND may_recheck = 1
-						AND check_count < %d 
-						AND last_check_attempt < %s 
-					)
-				)
-				AND EXISTS (
-					SELECT 1 FROM {$wpdb->prefix}blc_instances AS instances
-					WHERE 
-						instances.link_id = links.link_id
-						AND ( instances.container_type IN ({$loaded_containers}) )
-						AND ( instances.parser_type IN ({$loaded_parsers}) )
-				)
-			";
+            INNER JOIN {$wpdb->prefix}blc_instances AS instances USING(link_id)
+            WHERE
+                (
+                    ( last_check_attempt < %s )
+                    OR
+                    (
+                        (broken = 1 OR being_checked = 1)
+                        AND may_recheck = 1
+                        AND check_count < %d
+                        AND last_check_attempt < %s
+                    )
+                )
+
+            AND
+                ( instances.container_type IN ({$loaded_containers}) )
+                AND ( instances.parser_type IN ({$loaded_parsers}) )
+            ";
+
 		if ( !$count_only ){
 			$q .= "\nORDER BY last_check_attempt ASC\n";
 			if ( !empty($max_results) ){
@@ -2916,7 +2915,7 @@ class wsBrokenLinkChecker {
 			$link->last_check_attempt = time();
 			$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
 
-    			$link->isOptionLinkChanged = true;
+			$link->isOptionLinkChanged = true;
 			//Save the changes
 			if ( $link->save() ){
 				die( "OK" );
@@ -2955,7 +2954,7 @@ class wsBrokenLinkChecker {
 			$link->dismissed = $dismiss;
 
 			//Save the changes
-    			$link->isOptionLinkChanged = true;
+			$link->isOptionLinkChanged = true;
 			if ( $link->save() ){
 				die( "OK" );
 			} else {
