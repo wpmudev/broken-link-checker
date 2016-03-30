@@ -105,7 +105,7 @@ class blcLink {
         509=>'Bandwidth Limit Exceeded',
         510=>'Not Extended',
 	);
-	
+	var $isOptionLinkChanged = false;
 	function __construct($arg = null){
 		global $wpdb, $blclog; /** @var wpdb $wpdb  */
 		
@@ -529,7 +529,9 @@ class blcLink {
 		$values = $this->to_db_format($values);
 		
 		if ( $this->is_new ){
-			
+
+    			TransactionManager::getInstance()->commit();
+
 			//BUG: Technically, there should be a 'LOCK TABLES wp_blc_links WRITE' here. In fact,
 			//the plugin should probably lock all involved tables whenever it parses something, lest
 			//the user (ot another plugin) modify the thing being parsed while we're working.
@@ -575,7 +577,10 @@ class blcLink {
 			return $rez;
 									
 		} else {
-			
+			if ($this->isOptionLinkChanged !== true ) {
+				TransactionManager::getInstance()->start();
+			}
+			$this->isOptionLinkChanged = false;
 			//Generate the field = dbvalue expressions 
 			$set_exprs = array();
 			foreach($values as $name => $value){

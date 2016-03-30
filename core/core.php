@@ -14,6 +14,7 @@ if ( !function_exists( 'microtime_float' ) ) {
 require BLC_DIRECTORY . '/includes/screen-options/screen-options.php';
 require BLC_DIRECTORY . '/includes/screen-meta-links.php';
 require BLC_DIRECTORY . '/includes/wp-mutex.php';
+require BLC_DIRECTORY . '/includes/transactions-manager.php';
 
 if (!class_exists('wsBrokenLinkChecker')) {
 
@@ -2093,7 +2094,8 @@ class wsBrokenLinkChecker {
 				$link->false_positive = true;
 				$link->last_check_attempt = time();
 				$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
-				
+
+				$link->isOptionLinkChanged = true;
 				//Save the changes
 				if ( $link->save() ){
 					$processed_links++;
@@ -2152,6 +2154,7 @@ class wsBrokenLinkChecker {
 
 				$link->dismissed = true;
 
+				$link->isOptionLinkChanged = true;
 				//Save the changes
 				if ( $link->save() ){
 					$processed_links++;
@@ -2561,7 +2564,10 @@ class wsBrokenLinkChecker {
 
 			//Randomizing the array reduces the chances that we'll get several links to the same domain in a row.
 			shuffle($links);
-			
+
+			$transactionManager = TransactionManager::getInstance();
+			$transactionManager->start();
+
 			foreach ($links as $link) {
 				//Does this link need to be checked? Excluded links aren't checked, but their URLs are still
 				//tested periodically to see if they're still on the exclusion list.
@@ -2591,6 +2597,7 @@ class wsBrokenLinkChecker {
 					return;
 				}
 			}
+            $transactionManager->commit();
 
 			$start = microtime(true);
 			$links = $this->get_links_to_check($max_links_per_query);
@@ -2907,7 +2914,8 @@ class wsBrokenLinkChecker {
 			$link->false_positive = true;
 			$link->last_check_attempt = time();
 			$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
-			
+
+			$link->isOptionLinkChanged = true;
 			//Save the changes
 			if ( $link->save() ){
 				die( "OK" );
@@ -2946,6 +2954,7 @@ class wsBrokenLinkChecker {
 			$link->dismissed = $dismiss;
 
 			//Save the changes
+			$link->isOptionLinkChanged = true;
 			if ( $link->save() ){
 				die( "OK" );
 			} else {
@@ -3192,6 +3201,7 @@ class wsBrokenLinkChecker {
 
 		//In case the immediate check fails, this will ensure the link is checked during the next work() run.
 		$link->last_check_attempt = 0;
+		$link->isOptionLinkChanged = true;
 		$link->save();
 
 		//Check the link and save the results.

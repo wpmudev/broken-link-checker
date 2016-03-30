@@ -274,12 +274,18 @@ class blcContainer {
 				//FB::log("Parsing $name with '{$parser->parser_type}' parser");
 				$found_instances = $parser->parse( $value, $base_url, $default_link_text );
 				//FB::log($found_instances, "Found instances");
-				
+
+				$transactionManager = TransactionManager::getInstance();
+				$transactionManager->start();
+
 				//Complete the link instances by adding container info, then save them to the DB.
 				foreach($found_instances as $instance){
 					$instance->set_container($this, $name);
 					$instance->save(); 
 				}
+
+				$transactionManager->commit();
+
 			}
 		}
 		
