@@ -4,7 +4,7 @@ Donate link:
 Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, posts
 Requires at least: 3.2
 Tested up to: 4.4.1
-Stable tag: 1.10.11
+Stable tag: 1.11.1
 
 This plugin will check your posts, comments and other content for broken links and missing images, and notify you if any are found.
 
@@ -100,6 +100,10 @@ To upgrade your installation
 1. Reactivate the plugin. Your settings will be retained from the previous version.
 
 == Changelog ==
+
+= 1.11.1 =
+* Major performance improvement. Database queries reduced up to 10x in some cases.
+* Feel free to contribute to the plugin on [GitHub](https://github.com/ManageWP/broken-link-checker). Pull requests welcome!
 
 = 1.10.11 =
 * Fixed the issue with HTTPS (Thanks to [gmcinnes](https://wordpress.org/support/profile/gmcinnes))
