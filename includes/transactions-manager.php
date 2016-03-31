@@ -3,7 +3,7 @@
 class TransactionManager
 {
     private $isTransactionStarted = false;
-    static private $instance;
+    private static $instance;
 
     public function start()
     {
