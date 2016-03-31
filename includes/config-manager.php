@@ -19,8 +19,8 @@ class blcConfigurationManager {
 	 * @var bool Whether options have been successfully loaded from the database.
 	 */
 	public $db_option_loaded = false;
-	
-	function __construct( $option_name = '', $default_settings = null ){
+
+	function blcConfigurationManager( $option_name = '', $default_settings = null ){
 		$this->option_name = $option_name;
 		
 		if ( is_array($default_settings) ){
