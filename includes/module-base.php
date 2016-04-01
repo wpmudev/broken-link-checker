@@ -29,7 +29,7 @@ class blcModule {
 	 * @param blcModuleManager $module_manager
 	 * @return void
 	 */
-	function blcModule($module_id, $cached_header, &$plugin_conf, &$module_manager){
+	function __construct($module_id, $cached_header, &$plugin_conf, &$module_manager){
 		$this->module_id = $module_id;
 		$this->cached_header = $cached_header;
 		$this->plugin_conf = &$plugin_conf;
