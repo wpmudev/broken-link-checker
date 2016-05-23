@@ -2282,7 +2282,7 @@ class wsBrokenLinkChecker {
 		
 		$html .= '</div>';
 		
-		$html .= '<h5>' . __('Show on screen') . '</h5>';
+		$html .= '<h5>' . __('Show on screen', 'broken-link-checker') . '</h5>';
 		$html .= '<div class="screen-options">';
 		$html .= sprintf(
 			'<input type="text" name="per_page" maxlength="3" value="%d" class="screen-per-page" id="blc_links_per_page" />
