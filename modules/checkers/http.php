@@ -322,7 +322,7 @@ class blcCurlHttp extends blcHttpCheckerBase {
 
 
         // Apply filter before curl closes
-        apply_filters('broken-link-checker-curl-before-close', $ch);
+        apply_filters('broken-link-checker-curl-before-close', $ch, $content, $this->last_headers);
 
         curl_close($ch);
 
