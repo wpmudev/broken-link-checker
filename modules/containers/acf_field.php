@@ -75,10 +75,7 @@ class blcAcfMeta extends blcContainer {
         }
 
         if(!isset($this->fields[ $key ])){
-            error_log(print_r('$this->fields', true));
-            error_log(print_r($this->fields, true));
-            error_log(print_r('$key', true));
-            error_log(print_r($key, true));
+            $key = $field;
         }
 
         $get_only_first_field = ($this->fields[ $key ] !== 'acf_field');
