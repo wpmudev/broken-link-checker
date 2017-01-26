@@ -64,7 +64,13 @@ class blcAcfMeta extends blcContainer {
      */
     function get_field($field = '') {
         global $wpdb;
-        $get_only_first_field = ($this->fields[ $field ] !== 'acf_field');
+        $meta = get_metadata('post', $this->container_id, '_' . $field, true);
+        $key = explode('|', str_replace('_field', '|field', $meta));
+
+        if (is_array($key)) {
+            $key = $key[ count($key) - 1 ];
+        }
+        $get_only_first_field = ($this->fields[ $key ] !== 'acf_field');
 
         return get_metadata($this->meta_type, $this->container_id, $field, $get_only_first_field);
     }
@@ -103,12 +109,17 @@ class blcAcfMeta extends blcContainer {
      */
     function unlink($field_name, $parser, $url, $raw_url = '') {
         //        error_log(print_r('unlink', true));
+        $meta = get_metadata('post', $this->container_id, '_' . $field_name, true);
+        $key = explode('|', str_replace('_field', '|field', $meta));
 
-        if ($this->fields[ $field_name ] !== 'metadata') {
+        if (is_array($key)) {
+            $key = $key[ count($key) - 1 ];
+        }
+        if ($this->fields[ $key ] !== 'metadata') {
             return parent::unlink($field_name, $parser, $url, $raw_url);
         }
 
-        $rez = delete_metadata($this->meta_type, $this->container_id, $field_name, $raw_url);
+        $rez = update_metadata($this->meta_type, $this->container_id, $field_name, '');
         if ($rez) {
             return true;
         } else {
@@ -142,7 +153,14 @@ class blcAcfMeta extends blcContainer {
         ));
         */
 
-        if ($this->fields[ $field_name ] !== 'metadata') {
+        $meta = get_metadata('post', $this->container_id, '_'. $field_name, true);
+        $key = explode('|', str_replace('_field', '|field', $meta));
+
+        if (is_array($key)) {
+            $key = $key[ count($key) - 1 ];
+        }
+
+        if ($this->fields[ $key ] !== 'acf_field') {
             return parent::edit_link($field_name, $parser, $new_url, $old_url, $old_raw_url, $new_text);
         }
 
@@ -401,12 +419,10 @@ class blcAcfMetaManager extends blcContainerManager {
      */
     function get_containers($containers, $purpose = '', $load_wrapped_objects = false) {
 
-        if($purpose == 'parse') {
-            $type = $containers[0]['container_type'];
-            $id = $containers[0]['container_id'];
-        }
 
         $containers = $this->make_containers($containers);
+
+
 
         /*
         When links from custom fields are displayed in Tools -> Broken Links,
@@ -432,8 +448,6 @@ class blcAcfMetaManager extends blcContainerManager {
             get_posts($args);
         }
 
-        if ($purpose == 'parse') {
-
             $selected_fields = $this->selected_fields;
 
             $html_fields = array_filter($selected_fields, function ($value) {
@@ -446,7 +460,9 @@ class blcAcfMetaManager extends blcContainerManager {
             $url_fields = array_keys(array_diff($selected_fields, $html_fields));
             $html_fields = array_keys($html_fields);
 
-            $meta = get_metadata('post', $id);
+        foreach ($containers as $key => $container) {
+
+            $meta = get_metadata('post', $container->container_id);
             $fields = [];
 
             foreach ($meta as $field => $value) {
@@ -476,15 +492,9 @@ class blcAcfMetaManager extends blcContainerManager {
                 }
             }
 
-            $key = $type . '|' . $id;
-
             $containers[ $key ]->fields = $fields;
+
         }
-
-        error_log(print_r('----------------', true));
-        error_log(print_r($containers, true));
-        error_log(print_r('----------------', true));
-
 
         return $containers;
     }

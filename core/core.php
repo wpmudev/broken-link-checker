@@ -1409,7 +1409,7 @@ class wsBrokenLinkChecker {
     }
 
     function make_acf_field_input($html, $current_settings) {
-        $html .= '<span class="description">' . __('Enter the keys of acf fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>acf_field_html:</code>. For example, <code>acf_field_html:field_586a3eaa4091b</code>.', 'broken-link-checker') . '</span>';
+        $html .= '<span class="description">' . __('Enter the keys of acf fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_586a3eaa4091b</code>.', 'broken-link-checker') . '</span>';
         $html .= '<br><textarea name="blc_acf_fields" id="blc_acf_fields" cols="45" rows="4">';
         if (isset($current_settings['acf_fields'])) {
             $html .= esc_textarea(implode("\n", $current_settings['acf_fields']));
