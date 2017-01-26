@@ -111,6 +111,16 @@ jQuery(function($){
 			$('#module-extra-settings-custom_field').removeClass('hidden');
 		}
 	});
+
+	//When the user ticks the "Custom fields" box, display the field list input
+	//so that they notice that they need to enter the field names.
+	$('#module-checkbox-acf_field').click(function(){
+		var box = $(this);
+		var fieldList = $('#blc_acf_fields');
+		if ( box.is(':checked') && ( $.trim(fieldList.val()) == '' ) ){
+			$('#module-extra-settings-acf_field').removeClass('hidden');
+		}
+	});
 	
 	//Handle the "Recheck" button
 	$('#start-recheck').click(function(){

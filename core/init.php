@@ -95,6 +95,7 @@ $blc_config_manager = new blcConfigurationManager(
 		'enable_load_limit' => true,	//Enable/disable load monitoring. 
 		
         'custom_fields' => array(),		//List of custom fields that can contain URLs and should be checked.
+        'acf_fields' => array(),		//List of custom fields that can contain URLs and should be checked.
         'enabled_post_statuses' => array('publish'), //Only check posts that match one of these statuses
         
         'autoexpand_widget' => true, 	//Autoexpand the Dashboard widget if broken links are detected

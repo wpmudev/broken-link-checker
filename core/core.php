@@ -454,18 +454,24 @@ class wsBrokenLinkChecker {
 					PREG_SPLIT_NO_EMPTY			//skip empty values
 				) 
 			);
-                
+
             //Parse the custom field list
-            $new_custom_fields = array_filter( 
-				preg_split( '/[\r\n]+/', $cleanPost['blc_custom_fields'], -1, PREG_SPLIT_NO_EMPTY )
-			);
-            
-			//Calculate the difference between the old custom field list and the new one (used later)
-            $diff1 = array_diff( $new_custom_fields, $this->conf->options['custom_fields'] );
-            $diff2 = array_diff( $this->conf->options['custom_fields'], $new_custom_fields );
+            $new_custom_fields = array_filter(preg_split('/[\r\n]+/', $cleanPost['blc_custom_fields'], -1, PREG_SPLIT_NO_EMPTY));
+
+            //Calculate the difference between the old custom field list and the new one (used later)
+            $diff1 = array_diff($new_custom_fields, $this->conf->options['custom_fields']);
+            $diff2 = array_diff($this->conf->options['custom_fields'], $new_custom_fields);
             $this->conf->options['custom_fields'] = $new_custom_fields;
 
-			//Turning off warnings turns existing warnings into "broken" links.
+            //Parse the custom field list
+            $new_acf_fields = array_filter(preg_split('/[\r\n]+/', $cleanPost['blc_acf_fields'], -1, PREG_SPLIT_NO_EMPTY));
+
+            //Calculate the difference between the old custom field list and the new one (used later)
+            $acf_fields_diff1 = array_diff($new_acf_fields, $this->conf->options['acf_fields']);
+            $acf_fields_diff2 = array_diff($this->conf->options['acf_fields'], $new_acf_fields);
+            $this->conf->options['acf_fields'] = $new_acf_fields;
+
+            //Turning off warnings turns existing warnings into "broken" links.
 			$warnings_enabled = !empty($_POST['warnings_enabled']);
 			if ( $this->conf->get('warnings_enabled') && !$warnings_enabled ) {
 				$this->promote_warnings_to_broken();
@@ -588,6 +594,19 @@ class wsBrokenLinkChecker {
 				}
 			}
 
+			/*
+			 If the list of acf fields was modified then we MUST resynchronize or
+			 acf fields linked with existing posts may not be detected. This is somewhat
+			 inefficient.
+			 */
+			if ( ( count($acf_fields_diff1) > 0 ) || ( count($acf_fields_diff2) > 0 ) ){
+				$manager = blcContainerHelper::get_manager('acf_field');
+				if ( !is_null($manager) ){
+					$manager->resynch();
+					blc_got_unsynched_items();
+				}
+			}
+
 			//Resynchronize posts when the user enables or disables post statuses.
 			if ( $post_statuses_changed ) {
 				$overlord = blcPostTypeOverlord::getInstance();
@@ -630,7 +649,8 @@ class wsBrokenLinkChecker {
 		$debug = $this->get_debug_info();
 		
 		add_filter('blc-module-settings-custom_field', array($this, 'make_custom_field_input'), 10, 2);
-		
+		add_filter('blc-module-settings-acf_field', array($this, 'make_acf_field_input'), 10, 2);
+
 		//Translate and markup-ify module headers for display
 		$modules = $moduleManager->get_modules_by_category('', true, true);
 		
@@ -1377,18 +1397,25 @@ class wsBrokenLinkChecker {
      * @param array $current_settings The current plugin configuration.
      * @return string New extra HTML.
      */
-    function make_custom_field_input($html, $current_settings){
-    	$html .= '<span class="description">' . 
-					__(
-						'Enter the names of custom fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_name</code>.',
-						'broken-link-checker'
-					) .
-				 '</span>';
-    	$html .= '<br><textarea name="blc_custom_fields" id="blc_custom_fields" cols="45" rows="4">';
-        if( isset($current_settings['custom_fields']) )
+    function make_custom_field_input($html, $current_settings) {
+        $html .= '<span class="description">' . __('Enter the names of custom fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_name</code>.', 'broken-link-checker') . '</span>';
+        $html .= '<br><textarea name="blc_custom_fields" id="blc_custom_fields" cols="45" rows="4">';
+        if (isset($current_settings['custom_fields'])) {
             $html .= esc_textarea(implode("\n", $current_settings['custom_fields']));
+        }
         $html .= '</textarea>';
-        
+
+        return $html;
+    }
+
+    function make_acf_field_input($html, $current_settings) {
+        $html .= '<span class="description">' . __('Enter the keys of acf fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>acf_field_html:</code>. For example, <code>acf_field_html:field_586a3eaa4091b</code>.', 'broken-link-checker') . '</span>';
+        $html .= '<br><textarea name="blc_acf_fields" id="blc_acf_fields" cols="45" rows="4">';
+        if (isset($current_settings['acf_fields'])) {
+            $html .= esc_textarea(implode("\n", $current_settings['acf_fields']));
+        }
+        $html .= '</textarea>';
+
         return $html;
     }
     
