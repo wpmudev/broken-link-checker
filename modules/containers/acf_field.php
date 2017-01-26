@@ -64,12 +64,23 @@ class blcAcfMeta extends blcContainer {
      */
     function get_field($field = '') {
         global $wpdb;
+
         $meta = get_metadata('post', $this->container_id, '_' . $field, true);
         $key = explode('|', str_replace('_field', '|field', $meta));
 
         if (is_array($key)) {
             $key = $key[ count($key) - 1 ];
+        }else{
+            $key = $meta;
         }
+
+        if(!isset($this->fields[ $key ])){
+            error_log(print_r('$this->fields', true));
+            error_log(print_r($this->fields, true));
+            error_log(print_r('$key', true));
+            error_log(print_r($key, true));
+        }
+
         $get_only_first_field = ($this->fields[ $key ] !== 'acf_field');
 
         return get_metadata($this->meta_type, $this->container_id, $field, $get_only_first_field);
