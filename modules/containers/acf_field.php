@@ -664,11 +664,15 @@ class blcAcfMetaManager extends blcContainerManager {
      */
     function post_deleted($post_id) {
         //Get the associated container object
+
         $container = blcContainerHelper::get_container([$this->container_type, $post_id]);
-        //Delete it
-        $container->delete();
-        //Clean up any dangling links
-        blc_cleanup_links();
+
+        if($container != null){
+            //Delete it
+            $container->delete();
+            //Clean up any dangling links
+            blc_cleanup_links();
+        }
     }
 
     /**
