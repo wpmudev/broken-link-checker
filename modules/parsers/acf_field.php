@@ -15,11 +15,12 @@ ModuleHidden: true
 */
 
 class blcACFParser extends blcParser {
-	var $supported_formats = array('acf_field');
-	var $supported_containers = array();
-	
-  /**
-   * Parse a acf value.
+
+    var $supported_formats = ['acf_field'];
+    var $supported_containers = [];
+
+    /**
+     * Parse a acf value.
    *
    * @param string|array $content ACF value(s).
    * @param string $base_url The base URL to use for normalizing relative URLs. If ommitted, the blog's root URL will be used. 
@@ -27,13 +28,13 @@ class blcACFParser extends blcParser {
    * @return array An array of new blcLinkInstance objects.  
    */
 	function parse($content, $base_url = '', $default_link_text = ''){
-		$instances = array();
-		
-		if ( !is_array($content) ){
-			$content = array($content);
-		}
-		
-		foreach($content as $value){
+        $instances = [];
+
+        if ( !is_array($content) ){
+            $content = [$content];
+        }
+
+        foreach($content as $value){
 			//The complete contents of the meta field are stored in raw_url.
 			//This is useful for editing/unlinking, when one may need to
 			//distinguish between multiple fields with the same name. 
@@ -50,9 +51,13 @@ class blcACFParser extends blcParser {
 			};
 					
 			if ( !isset($parts['scheme']) ){
-			    return $instances;
-				//No scheme - likely a relative URL. bail
+				//No scheme - likely a relative URL. Turn it into an absolute one.
+				$url = $this->relative2absolute($url, $base_url);
 
+				//Skip invalid URLs (again)
+				if ( !$url || (strlen($url)<6) ) {
+			    return $instances;
+				}
 			}
 					
 		    //The URL is okay, create and populate a new link instance.

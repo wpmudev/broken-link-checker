@@ -70,11 +70,11 @@ class blcAcfMeta extends blcContainer {
 
         if (is_array($key)) {
             $key = $key[ count($key) - 1 ];
-        }else{
+        } else {
             $key = $meta;
         }
 
-        if(!isset($this->fields[ $key ])){
+        if (!isset($this->fields[ $key ])) {
             $key = $field;
         }
 
@@ -95,8 +95,6 @@ class blcAcfMeta extends blcContainer {
      * @return bool|WP_Error True on success, an error object if something went wrong.
      */
     function update_field($field, $new_value, $old_value = '') {
-        //	    error_log(print_r('update_field', true));
-
         $rez = update_metadata($this->meta_type, $this->container_id, $field, $new_value, $old_value);
         if ($rez) {
             return true;
@@ -161,7 +159,7 @@ class blcAcfMeta extends blcContainer {
         ));
         */
 
-        $meta = get_metadata('post', $this->container_id, '_'. $field_name, true);
+        $meta = get_metadata('post', $this->container_id, '_' . $field_name, true);
         $key = explode('|', str_replace('_field', '|field', $meta));
 
         if (is_array($key)) {
@@ -427,10 +425,7 @@ class blcAcfMetaManager extends blcContainerManager {
      */
     function get_containers($containers, $purpose = '', $load_wrapped_objects = false) {
 
-
         $containers = $this->make_containers($containers);
-
-
 
         /*
         When links from custom fields are displayed in Tools -> Broken Links,
@@ -456,17 +451,17 @@ class blcAcfMetaManager extends blcContainerManager {
             get_posts($args);
         }
 
-            $selected_fields = $this->selected_fields;
+        $selected_fields = $this->selected_fields;
 
-            $html_fields = array_filter($selected_fields, function ($value) {
-                if ($value == 'html') {
-                    return true;
-                }
-                return false;
-            });
+        $html_fields = array_filter($selected_fields, function ($value) {
+            if ($value == 'html') {
+                return true;
+            }
+            return false;
+        });
 
-            $url_fields = array_keys(array_diff($selected_fields, $html_fields));
-            $html_fields = array_keys($html_fields);
+        $url_fields = array_keys(array_diff($selected_fields, $html_fields));
+        $html_fields = array_keys($html_fields);
 
         foreach ($containers as $key => $container) {
 
@@ -667,7 +662,7 @@ class blcAcfMetaManager extends blcContainerManager {
 
         $container = blcContainerHelper::get_container([$this->container_type, $post_id]);
 
-        if($container != null){
+        if ($container != null) {
             //Delete it
             $container->delete();
             //Clean up any dangling links
