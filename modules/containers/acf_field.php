@@ -12,7 +12,7 @@ ModuleClassName: blcAcfMetaManager
 */
 
 //Note : If it ever becomes necessary to check metadata on objects other than posts, it will
-//be fairly easy to extract a more general metadata container class from blcAcfMeta. 
+//be fairly easy to extract a more general metadata container class from blcAcfMeta.
 
 /**
  * blcAcfMeta - A link container class for post metadata (AKA custom fields).
@@ -121,7 +121,7 @@ class blcAcfMeta extends blcContainer {
         if (is_array($key)) {
             $key = $key[ count($key) - 1 ];
         }
-        if ($this->fields[ $key ] !== 'metadata') {
+        if ($this->fields[ $key ] !== 'acf_field') {
             return parent::unlink($field_name, $parser, $url, $raw_url);
         }
 
@@ -598,7 +598,7 @@ class blcAcfMetaManager extends blcContainerManager {
             return;
         }
 
-        if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id) || empty($_POST['acf']) || !is_int($post_id)) {
+        if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id) || !is_int($post_id)) {
             return;
         }
 
@@ -660,7 +660,7 @@ class blcAcfMetaManager extends blcContainerManager {
     function post_deleted($post_id) {
         //Get the associated container object
 
-        $container = blcContainerHelper::get_container([$this->container_type, $post_id]);
+        $container = blcContainerHelper::get_container([$this->container_type, intval($post_id) ]);
 
         if ($container != null) {
             //Delete it
