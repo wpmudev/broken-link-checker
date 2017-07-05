@@ -5,24 +5,24 @@
  * @copyright 2010
  */
 
-if ( !function_exists('sys_get_temp_dir')) {
-  function sys_get_temp_dir() {
-    if (!empty($_ENV['TMP'])) { return realpath($_ENV['TMP']); }
-    if (!empty($_ENV['TMPDIR'])) { return realpath( $_ENV['TMPDIR']); }
-    if (!empty($_ENV['TEMP'])) { return realpath( $_ENV['TEMP']); }
-    $tempfile = tempnam(uniqid(rand(),TRUE),'');
-    if (@file_exists($tempfile)) {
-	    unlink($tempfile);
-	    return realpath(dirname($tempfile));
-    }
-	return '';
-  }
+if ( ! function_exists( 'sys_get_temp_dir' ) ) {
+	function sys_get_temp_dir() {
+		if ( ! empty( $_ENV['TMP'] ) ) { return realpath( $_ENV['TMP'] ); }
+		if ( ! empty( $_ENV['TMPDIR'] ) ) { return realpath( $_ENV['TMPDIR'] ); }
+		if ( ! empty( $_ENV['TEMP'] ) ) { return realpath( $_ENV['TEMP'] ); }
+		$tempfile = tempnam( uniqid( rand(),TRUE ),'' );
+		if ( @file_exists( $tempfile ) ) {
+			unlink( $tempfile );
+			return realpath( dirname( $tempfile ) );
+		}
+		return '';
+	}
 }
 
 //Include the internationalized domain name converter (requires PHP 5)
-if ( version_compare(phpversion(), '5.0.0', '>=') && !class_exists('idna_convert') ){
+if ( version_compare( phpversion(), '5.0.0', '>=' ) && ! class_exists( 'idna_convert' ) ) {
 	include BLC_DIRECTORY . '/idn/idna_convert.class.php';
-	if ( !function_exists('encode_utf8') ){
+	if ( ! function_exists( 'encode_utf8' ) ) {
 		include BLC_DIRECTORY . '/idn/transcode_wrapper.php';
 	}
 }
@@ -72,8 +72,8 @@ if ( ! class_exists( 'blcUtility' ) ) {
 	* @return bool
 	*/
 		static function is_open_basedir(){
-			$open_basedir = ini_get('open_basedir');
-			return $open_basedir && ( strtolower($open_basedir) != 'none' );
+			$open_basedir = ini_get( 'open_basedir' );
+			return $open_basedir && ( strtolower( $open_basedir ) != 'none' );
 		}
 
 	/**
@@ -85,15 +85,15 @@ if ( ! class_exists( 'blcUtility' ) ) {
 	* @param string $pad Pad the truncated string with this string. Defaults to an HTML ellipsis.
 	* @return string
 	*/
-		static function truncate($text, $max_characters = 0, $break = ' ', $pad = '&hellip;'){
-			if ( strlen($text) <= $max_characters ){
+		static function truncate( $text, $max_characters = 0, $break = ' ', $pad = '&hellip;' ) {
+			if ( strlen( $text ) <= $max_characters ) {
 				return $text;
 			}
 
-			$text = substr($text, 0, $max_characters);
-			$break_pos = strrpos($text, $break);
-			if ( $break_pos !== false ){
-				$text = substr($text, 0, $break_pos);
+			$text = substr( $text, 0, $max_characters );
+			$break_pos = strrpos( $text, $break );
+			if ( false !== $break_pos ) {
+				$text = substr( $text, 0, $break_pos );
 			}
 
 			return $text.$pad;
@@ -124,34 +124,34 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		*
 		* @return array An array of extracted tags, or an empty array if no matching tags were found.
 		*/
-		static function extract_tags( $html, $tag, $selfclosing = null, $return_the_entire_tag = false, $charset = 'ISO-8859-1' ){
+		static function extract_tags( $html, $tag, $selfclosing = null, $return_the_entire_tag = false, $charset = 'ISO-8859-1' ) {
 
-			if ( is_array($tag) ){
-				$tag = implode('|', $tag);
+			if ( is_array( $tag ) ) {
+				$tag = implode( '|', $tag );
 			}
 
 			//If the user didn't specify if $tag is a self-closing tag we try to auto-detect it
 			//by checking against a list of known self-closing tags.
 			$selfclosing_tags = array( 'area', 'base', 'basefont', 'br', 'hr', 'input', 'img', 'link', 'meta', 'col', 'param' );
-			if ( is_null($selfclosing) ){
+			if ( is_null( $selfclosing ) ) {
 				$selfclosing = in_array( $tag, $selfclosing_tags );
 			}
 
 			//The regexp is different for normal and self-closing tags because I can't figure out
 			//how to make a sufficiently robust unified one.
-			if ( $selfclosing ){
+			if ( $selfclosing ) {
 				$tag_pattern =
-					'@<(?P<tag>'.$tag.')			# <tag
-					(?P<attributes>\s[^>]+)?		# attributes, if any
-					\s*/?>							# /> or just >, being lenient here
+					'@<(?P<tag>' . $tag . ')			# <tag
+					(?P<attributes>\s[^>]+)?			# attributes, if any
+					\s*/?>								# /> or just >, being lenient here
 					@xsi';
 			} else {
 				$tag_pattern =
-					'@<(?P<tag>'.$tag.')			# <tag
-					(?P<attributes>\s[^>]+)?		# attributes, if any
-					\s*>							# >
-					(?P<contents>.*?)				# tag contents
-					</(?P=tag)>						# the closing </tag>
+					'@<(?P<tag>' . $tag . ')			# <tag
+					(?P<attributes>\s[^>]+)?	 		# attributes, if any
+					\s*>						 		# >
+					(?P<contents>.*?)			 		# tag contents
+					</(?P=tag)>					 		# the closing </tag>
 					@xsi';
 			}
 
@@ -167,35 +167,35 @@ if ( ! class_exists( 'blcUtility' ) ) {
 				@xsi';
 
 			//Find all tags
-			if ( !preg_match_all($tag_pattern, $html, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE ) ){
+			if ( ! preg_match_all( $tag_pattern, $html, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE ) ) {
 				//Return an empty array if we didn't find anything
 				return array();
 			}
 
 			$tags = array();
-			foreach ($matches as $match){
+			foreach ( $matches as $match ) {
 
-				//Parse tag attributes, if any
+				// Parse tag attributes, if any.
 				$attributes = array();
-				if ( !empty($match['attributes'][0]) ){
+				if ( ! empty( $match['attributes'][0] ) ) {
 
-					if ( preg_match_all( $attribute_pattern, $match['attributes'][0], $attribute_data, PREG_SET_ORDER ) ){
+					if ( preg_match_all( $attribute_pattern, $match['attributes'][0], $attribute_data, PREG_SET_ORDER ) ) {
 						//Turn the attribute data into a name->value array
-						foreach($attribute_data as $attr){
-							if( !empty($attr['value_quoted']) ){
+						foreach ( $attribute_data as $attr ) {
+							if( ! empty( $attr['value_quoted'] ) ) {
 								$value = $attr['value_quoted'];
-							} else if( !empty($attr['value_unquoted']) ){
+							} else if( ! empty( $attr['value_unquoted'] ) ) {
 								$value = $attr['value_unquoted'];
 							} else {
 								$value = '';
 							}
 
-							//Passing the value through html_entity_decode is handy when you want
-							//to extract link URLs or something like that. You might want to remove
-							//or modify this call if it doesn't fit your situation.
+							// Passing the value through html_entity_decode is handy when you want
+							// to extract link URLs or something like that. You might want to remove
+							// or modify this call if it doesn't fit your situation.
 							$value = html_entity_decode( $value, ENT_QUOTES, $charset );
 
-							$attributes[$attr['name']] = $value;
+							$attributes[ $attr['name'] ] = $value;
 						}
 					}
 
@@ -204,10 +204,10 @@ if ( ! class_exists( 'blcUtility' ) ) {
 				$tag = array(
 					'tag_name' => $match['tag'][0],
 					'offset' => $match[0][1],
-					'contents' => !empty($match['contents'])?$match['contents'][0]:'', //empty for self-closing tags
+					'contents' => ! empty( $match['contents'] ) ? $match['contents'][0] : '', // Empty for self-closing tags.
 					'attributes' => $attributes,
 				);
-				if ( $return_the_entire_tag ){
+				if ( $return_the_entire_tag ) {
 					$tag['full_tag'] = $match[0][0];
 				}
 
@@ -224,8 +224,8 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		* @param string $default_value Optional. If the cookie is not set, this value will be returned instead. Defaults to an empty string.
 		* @return mixed Either the value of the requested cookie, or $default_value.
 		*/
-		static function get_cookie($cookie_name, $default_value = ''){
-			if ( isset($_COOKIE[$cookie_name]) ){
+		static function get_cookie( $cookie_name, $default_value = '' ) {
+			if ( isset( $_COOKIE[$cookie_name] ) ) {
 				return $_COOKIE[$cookie_name];
 			} else {
 				return $default_value;
@@ -239,12 +239,7 @@ if ( ! class_exists( 'blcUtility' ) ) {
 	* @param string $type Optional. The output template to use.
 	* @return string
 	*/
-		static function fuzzy_delta($delta, $template = 'default'){
-			$ONE_MINUTE = 60;
-			$ONE_HOUR = 60 * $ONE_MINUTE;
-			$ONE_DAY = 24 * $ONE_HOUR;
-			$ONE_MONTH = $ONE_DAY * 3652425 / 120000;
-			$ONE_YEAR = $ONE_DAY * 3652425 / 10000;
+		static function fuzzy_delta( $delta, $template = 'default' ) {
 
 			$templates = array(
 				'seconds' => array(
@@ -273,19 +268,19 @@ if ( ! class_exists( 'blcUtility' ) ) {
 				$delta = 1;
 			}
 
-			if ( $delta < $ONE_MINUTE ){
+			if ( $delta < MINUTE_IN_SECONDS ) {
 				$units = 'seconds';
-			} elseif ( $delta < $ONE_HOUR ){
-				$delta = intval($delta / $ONE_MINUTE);
+			} elseif ( $delta < HOUR_IN_SECONDS ) {
+				$delta = intval( $delta / MINUTE_IN_SECONDS );
 				$units = 'minutes';
-			} elseif ( $delta < $ONE_DAY ){
-				$delta = intval($delta / $ONE_HOUR);
+			} elseif ( $delta < DAY_IN_SECONDS ) {
+				$delta = intval( $delta / HOUR_IN_SECONDS );
 				$units = 'hours';
-			} elseif ( $delta < $ONE_MONTH ){
-				$delta = intval($delta / $ONE_DAY);
+			} elseif ( $delta < MONTH_IN_SECONDS ) {
+				$delta = intval( $delta / DAY_IN_SECONDS );
 				$units = 'days';
 			} else {
-				$delta = intval( $delta / $ONE_MONTH );
+				$delta = intval( $delta / MONTH_IN_SECONDS );
 				$units = 'months';
 			}
 
@@ -308,7 +303,7 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		static function optimize_database(){
 			global $wpdb; /** @var wpdb $wpdb */
 
-			$wpdb->query("OPTIMIZE TABLE {$wpdb->prefix}blc_links, {$wpdb->prefix}blc_instances, {$wpdb->prefix}blc_synch");
+			$wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}blc_links, {$wpdb->prefix}blc_instances, {$wpdb->prefix}blc_synch" );
 		}
 
 	/**
