@@ -86,10 +86,10 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 			// Column headers.
 			foreach ( $current_layout as $column_id ) {
-				$column = $this->columns[$column_id];
+				$column = $this->columns[ $column_id ];
 
 				$column_classes = array( 'column-' . $column_id );
-				if ( isset( $column['class'] ) ){
+				if ( isset( $column['class'] ) ) {
 					$column_classes[] = $column['class'];
 				}
 				if ( ! in_array( $column_id, $visible_columns ) ) {
@@ -101,7 +101,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 					$orderby = $column['orderby'];
 					$current_orderby = isset( $_GET['orderby'] ) ? $_GET['orderby'] : '';
 					$current_order = isset( $_GET['order'] ) ? $_GET['order'] : 'asc';
-					if ( ! in_array( $current_order, array('asc', 'desc') ) ) {
+					if ( ! in_array( $current_order, array( 'asc', 'desc') ) ) {
 						$current_order = 'asc';
 					}
 
@@ -264,8 +264,9 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 				$result = array();
 				foreach ( $this->layouts[ $layout ] as $column_id ) {
-					if ( isset( $this->columns[ $column_id ] ) )
+					if ( isset( $this->columns[ $column_id ] ) ) {
 						$result[ $column_id ] = $this->columns[ $column_id ];
+					}
 				}
 				return $result;
 
@@ -283,29 +284,29 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			//Generate an <option> element for each possible bulk action. The list doesn't change,
 			//so we can do it once and reuse the generated HTML.
 			$bulk_actions = array(
-				'-1' => __('Bulk Actions', 'broken-link-checker'),
-				"bulk-edit" => __('Edit URL', 'broken-link-checker'),
-				"bulk-recheck" => __('Recheck', 'broken-link-checker'),
-				"bulk-deredirect" => __('Fix redirects', 'broken-link-checker'),
-				"bulk-not-broken" => __('Mark as not broken', 'broken-link-checker'),
-				"bulk-dismiss" => __('Dismiss', 'broken-link-checker'),
-				"bulk-unlink" => __('Unlink', 'broken-link-checker'),
+				'-1' => __( 'Bulk Actions', 'broken-link-checker' ),
+				'bulk-edit' => __( 'Edit URL', 'broken-link-checker' ),
+				'bulk-recheck' => __( 'Recheck', 'broken-link-checker' ),
+				'bulk-deredirect' => __( 'Fix redirects', 'broken-link-checker' ),
+				'bulk-not-broken' => __( 'Mark as not broken', 'broken-link-checker' ),
+				'bulk-dismiss' => __( 'Dismiss', 'broken-link-checker' ),
+				'bulk-unlink' => __( 'Unlink', 'broken-link-checker' ),
 			);
-			if ( EMPTY_TRASH_DAYS ){
-				$bulk_actions["bulk-trash-sources"] = __('Move sources to Trash', 'broken-link-checker');
+			if ( EMPTY_TRASH_DAYS ) {
+				$bulk_actions['bulk-trash-sources'] = __( 'Move sources to Trash', 'broken-link-checker' );
 			} else {
-				$bulk_actions["bulk-delete-sources"] = __('Delete sources', 'broken-link-checker');
+				$bulk_actions['bulk-delete-sources'] = __( 'Delete sources', 'broken-link-checker' );
 			}
 
 			$bulk_actions_html = '';
-			foreach($bulk_actions as $value => $name){
-				$bulk_actions_html .= sprintf('<option value="%s">%s</option>', $value, $name);
+			foreach ( $bulk_actions as $value => $name ) {
+				$bulk_actions_html .= sprintf( '<option value="%s">%s</option>', $value, $name );
 			}
 
 			$this->bulk_actions_html = $bulk_actions_html;
 
-			//Pagination links can also be pre-generated.
-			//WP has a built-in function for pagination :)
+			// Pagination links can also be pre-generated.
+			// WP has a built-in function for pagination :).
 			$page_links = paginate_links( array(
 				'base' => add_query_arg( 'paged', '%#%' ),
 				'format' => '',
@@ -336,18 +337,18 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param array $visible_columns List of visible columns.
 		* @return void
 		*/
-		function bulk_edit_form($visible_columns){
+		function bulk_edit_form( $visible_columns ) {
 			?>
-			<tr id="bulk-edit" class="inline-edit-rows"><td colspan="<?php echo count($visible_columns)+1; ?>">
+			<tr id="bulk-edit" class="inline-edit-rows"><td colspan="<?php echo count( $visible_columns ) + 1; ?>">
 			<div id="bulk-edit-wrap">
 			<fieldset>
-				<h4><?php _e('Bulk Edit URLs', 'broken-link-checker'); ?></h4>
+				<h4><?php _e( 'Bulk Edit URLs', 'broken-link-checker' ); ?></h4>
 				<label>
-					<span class="title"><?php _e('Find', 'broken-link-checker'); ?></span>
+					<span class="title"><?php _e( 'Find', 'broken-link-checker' ); ?></span>
 					<input type="text" name="search" class="text">
 				</label>
 				<label>
-					<span class="title"><?php _e('Replace with', 'broken-link-checker'); ?></span>
+					<span class="title"><?php _e( 'Replace with', 'broken-link-checker' ); ?></span>
 					<input type="text" name="replace" class="text">
 				</label>
 
@@ -355,19 +356,19 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 					<span class="title">&nbsp;</span>
 					<label>
 						<input type="checkbox" name="case_sensitive">
-						<?php _e('Case sensitive', 'broken-link-checker'); ?>
+						<?php _e( 'Case sensitive', 'broken-link-checker' ); ?>
 					</label>
 					<label>
 						<input type="checkbox" name="regex">
-						<?php _e('Regular expression', 'broken-link-checker'); ?>
+						<?php _e( 'Regular expression', 'broken-link-checker' ); ?>
 					</label>
 				</div>
 			</fieldset>
 
 			<p class="submit inline-edit-save">
-				<a href="#bulk-edit" class="button-secondary cancel alignleft" title="<?php echo esc_attr(__('Cancel', 'broken-link-checker')); ?>" accesskey="c"><?php _e('Cancel', 'broken-link-checker'); ?></a>
+				<a href="#bulk-edit" class="button-secondary cancel alignleft" title="<?php echo esc_attr( __( 'Cancel', 'broken-link-checker' ) ); ?>" accesskey="c"><?php _e( 'Cancel', 'broken-link-checker' ); ?></a>
 				<input type="submit" name="bulk_edit" class="button-primary alignright" value="<?php
-					_e('Update', 'broken-link-checker');
+					_e( 'Update', 'broken-link-checker' );
 				?>" accesskey="s">
 			</p>
 			</div>
@@ -384,25 +385,27 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param integer $rownum Table row number.
 		* @return void
 		*/
-		function link_row($link, $layout, $visible_columns, $rownum = 0){
+		function link_row( $link, $layout, $visible_columns, $rownum = 0 ) {
 
 			//Figure out what CSS classes the link row should have
 			$rowclass = ($rownum % 2)? 'alternate' : '';
 
 			$excluded = $this->core->is_excluded( $link->url );
-			if ( $excluded ) $rowclass .= ' blc-excluded-link';
+			if ( $excluded ) {
+				$rowclass .= ' blc-excluded-link';
+			}
 
-			if ( $link->redirect_count > 0){
+			if ( $link->redirect_count > 0 ) {
 				$rowclass .= ' blc-redirect';
 			}
 
 			$days_broken = 0;
-			if ( $link->broken ){
-				//Add a highlight to broken links that appear to be permanently broken
-				$days_broken = intval( (time() - $link->first_failure) / (3600*24) );
-				if ( $days_broken >= $this->core->conf->options['failure_duration_threshold'] ){
+			if ( $link->broken ) {
+				// Add a highlight to broken links that appear to be permanently broken.
+				$days_broken = intval( ( time() - $link->first_failure ) / ( 3600 * 24 ) );
+				if ( $days_broken >= $this->core->conf->options['failure_duration_threshold'] ) {
 					$rowclass .= ' blc-permanently-broken';
-					if ( $this->core->conf->options['highlight_permanent_failures'] ){
+					if ( $this->core->conf->options['highlight_permanent_failures'] ) {
 						$rowclass .= ' blc-permanently-broken-hl';
 					}
 				}
@@ -411,29 +414,29 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			$status = $link->analyse_status();
 			$rowclass .= ' link-status-' . $status['code'];
 
-			//Retrieve link instances to display in the table
+			// Retrieve link instances to display in the table.
 			$instances = $link->get_instances();
 
-			if ( !empty($instances) ){
-				//Put instances that match the selected link type at the top. Makes search results look better.
-				if ( !empty($this->current_filter['search_params']['s_link_type']) ){
+			if ( ! empty( $instances ) ) {
+				// Put instances that match the selected link type at the top. Makes search results look better.
+				if ( ! empty( $this->current_filter['search_params']['s_link_type'] ) ) {
 					$s_link_type = $this->current_filter['search_params']['s_link_type'];
 				} else {
 					$s_link_type = '';
 				}
-				$instances = $this->sort_instances_for_display($instances, $s_link_type);
+				$instances = $this->sort_instances_for_display( $instances, $s_link_type );
 			}
 
-			//For inline editing, we'll need to know if any instances have editable link text, and what it is.
+			// For inline editing, we'll need to know if any instances have editable link text, and what it is.
 			$can_edit_text = false;
 			$can_edit_url = false;
 			$editable_link_texts = $non_editable_link_texts = array();
-			foreach($instances as $instance) {
+			foreach ( $instances as $instance ) {
 				if ( $instance->is_link_text_editable() ) {
 					$can_edit_text = true;
-					$editable_link_texts[$instance->link_text] = true;
+					$editable_link_texts[ $instance->link_text ] = true;
 				} else {
-					$non_editable_link_texts[$instance->link_text] = true;
+					$non_editable_link_texts[ $instance->link_text ] = true;
 				}
 
 				if ( $instance->is_url_editable() ) {
@@ -443,10 +446,10 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 			$link_texts = $can_edit_text ? $editable_link_texts : $non_editable_link_texts;
 			$data_link_text = '';
-			if ( count($link_texts) === 1 ) {
-				//All instances have the same text - use it.
-				$link_text = key($link_texts);
-				$data_link_text = ' data-link-text="' . esc_attr($link_text) . '"';
+			if ( 1 === count( $link_texts ) ) {
+				// All instances have the same text - use it.
+				$link_text = key( $link_texts );
+				$data_link_text = ' data-link-text="' . esc_attr( $link_text ) . '"';
 			}
 
 			printf(
@@ -459,22 +462,22 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 				$data_link_text
 			);
 
-			//The checkbox used to select links is automatically printed in all layouts
-			//and can't be disabled. Without it, bulk actions wouldn't work.
-			$this->column_checkbox($link);
+			// The checkbox used to select links is automatically printed in all layouts
+			// and can't be disabled. Without it, bulk actions wouldn't work.
+			$this->column_checkbox( $link );
 
-			foreach($layout as $column_id){
-				$column = $this->columns[$column_id];
+			foreach ( $layout as $column_id ) {
+				$column = $this->columns[ $column_id ];
 
 				printf(
 					'<td class="column-%s%s">',
 					$column_id,
-					in_array($column_id, $visible_columns) ? '' : ' hidden'
+					in_array( $column_id, $visible_columns ) ? '' : ' hidden'
 				);
 
-				if ( isset($column['content']) ){
-					if ( is_callable($column['content']) ){
-						call_user_func($column['content'], $link, $instances);
+				if ( isset( $column['content'] ) ) {
+					if ( is_callable( $column['content'] ) ) {
+						call_user_func( $column['content'], $link, $instances );
 					} else {
 						echo $column['content'];
 					}
@@ -498,13 +501,13 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param integer $rownum Table row number.
 		* @return void
 		*/
-		function link_details_row($link, $visible_columns, $rownum = 0){
+		function link_details_row( $link, $visible_columns, $rownum = 0 ) {
 			printf(
 				'<tr id="link-details-%d" class="blc-link-details"><td colspan="%d">',
 				$link->link_id,
-				count($visible_columns)+1
+				count( $visible_columns ) + 1
 			);
-			$this->details_row_contents($link);
+			$this->details_row_contents( $link );
 			echo '</td></tr>';
 		}
 
@@ -514,57 +517,57 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param blcLink $link
 		* @return void
 		*/
-		public static function details_row_contents($link){
+		public static function details_row_contents( $link ) {
 			?>
 			<div class="blc-detail-container">
 				<div class="blc-detail-block" style="float: left; width: 49%;">
 					<ol style='list-style-type: none;'>
-					<?php if ( !empty($link->post_date) ) { ?>
-					<li><strong><?php _e('Post published on', 'broken-link-checker'); ?>:</strong>
+					<?php if ( ! empty( $link->post_date ) ) { ?>
+					<li><strong><?php _e( 'Post published on', 'broken-link-checker' ); ?>:</strong>
 					<span class='post_date'><?php
-						echo date_i18n(get_option('date_format'),strtotime($link->post_date));
+						echo date_i18n( get_option( 'date_format' ), strtotime( $link->post_date ) );
 					?></span></li>
 					<?php } ?>
-					<li><strong><?php _e('Link last checked', 'broken-link-checker'); ?>:</strong>
+					<li><strong><?php _e( 'Link last checked', 'broken-link-checker' ); ?>:</strong>
 					<span class='check_date'><?php
 						$last_check = $link->last_check;
-						if ( $last_check < strtotime('-10 years') ){
-							_e('Never', 'broken-link-checker');
+						if ( $last_check < strtotime( '-10 years' ) ) {
+							_e( 'Never', 'broken-link-checker' );
 						} else {
 							printf(
 								'<time datetime="%s">%s</time>',
-								esc_attr(date('c', $last_check)),
-								date_i18n(get_option('date_format'), $last_check)
+								esc_attr( date( 'c', $last_check ) ),
+								date_i18n( get_option('date_format' ), $last_check )
 							);
 						}
 					?></span></li>
 
-					<li><strong><?php _e('HTTP code', 'broken-link-checker'); ?>:</strong>
+					<li><strong><?php _e( 'HTTP code', 'broken-link-checker' ); ?>:</strong>
 					<span class='http_code'><?php
 						print $link->http_code;
 					?></span></li>
 
-					<li><strong><?php _e('Response time', 'broken-link-checker'); ?>:</strong>
+					<li><strong><?php _e( 'Response time', 'broken-link-checker' ); ?>:</strong>
 					<span class='request_duration'><?php
-						printf( __('%2.3f seconds', 'broken-link-checker'), $link->request_duration);
+						printf( __( '%2.3f seconds', 'broken-link-checker' ), $link->request_duration );
 					?></span></li>
 
-					<li><strong><?php _e('Final URL', 'broken-link-checker'); ?>:</strong>
+					<li><strong><?php _e( 'Final URL', 'broken-link-checker' ); ?>:</strong>
 					<span class='final_url'><?php
-						print esc_html($link->final_url);
+						print esc_html( $link->final_url );
 					?></span></li>
 
-					<li><strong><?php _e('Redirect count', 'broken-link-checker'); ?>:</strong>
+					<li><strong><?php _e( 'Redirect count', 'broken-link-checker' ); ?>:</strong>
 					<span class='redirect_count'><?php
 						print $link->redirect_count;
 					?></span></li>
 
-					<li><strong><?php _e('Instance count', 'broken-link-checker'); ?>:</strong>
+					<li><strong><?php _e( 'Instance count', 'broken-link-checker' ); ?>:</strong>
 					<span class='instance_count'><?php
-						print count($link->get_instances());
+						print count( $link->get_instances() );
 					?></span></li>
 
-					<?php if ( ($link->broken || $link->warning) && (intval( $link->check_count ) > 0) ){ ?>
+					<?php if ( ( $link->broken || $link->warning ) && (intval( $link->check_count ) > 0) ) { ?>
 					<li><br/>
 					<?php
 						printf(
@@ -589,7 +592,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 					<ol style='list-style-type: none;'>
 						<li><strong><?php _e('Log', 'broken-link-checker'); ?>:</strong>
 					<span class='blc_log'><?php
-						print nl2br($link->log);
+						print nl2br( $link->log );
 					?></span></li>
 					</ol>
 				</div>
@@ -599,7 +602,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			<?php
 		}
 
-		function column_checkbox($link){
+		function column_checkbox( $link ) {
 			?>
 			<th scope="row" class="check-column"><input type="checkbox" name="selected_links[]" value="<?php echo $link->link_id; ?>" /></th>
 			<?php
@@ -609,10 +612,10 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param blcLink $link
 		* @param blcLinkInstance[] $instances
 		*/
-		function column_status($link, $instances){
+		function column_status( $link, $instances ) {
 			printf(
 				'<table class="mini-status" title="%s">',
-				esc_attr(__('Show more info about this link', 'broken-link-checker'))
+				esc_attr( __( 'Show more info about this link', 'broken-link-checker' ) )
 			);
 
 			$status = $link->analyse_status();
@@ -624,14 +627,14 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 					</td>
 				</tr>',
 				$status['code'],
-				empty($link->http_code)?'':$link->http_code,
+				empty( $link->http_code ) ? '' : $link->http_code,
 				$status['text']
 			);
 
-			//Last checked...
-			if ( $link->last_check != 0 ){
-				$last_check = _x('Checked', 'checked how long ago', 'broken-link-checker') . ' ';
-				$last_check .= blcUtility::fuzzy_delta(time() - $link->last_check, 'ago');
+			// Last checked...
+			if ( $link->last_check != 0 ) {
+				$last_check = _x( 'Checked', 'checked how long ago', 'broken-link-checker' ) . ' ';
+				$last_check .= blcUtility::fuzzy_delta( time() - $link->last_check, 'ago' );
 
 				printf(
 					'<tr class="link-last-checked"><td>%s</td></tr>',
@@ -640,25 +643,25 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			}
 
 
-			//Broken for...
-			if ( $link->broken ){
+			// Broken for...
+			if ( $link->broken ) {
 				$delta = time() - $link->first_failure;
-				$broken_for = blcUtility::fuzzy_delta($delta);
+				$broken_for = blcUtility::fuzzy_delta( $delta );
 				printf(
 					'<tr class="link-broken-for"><td>%s %s</td></tr>',
-					__('Broken for', 'broken-link-checker'),
+					__( 'Broken for', 'broken-link-checker' ),
 					$broken_for
 				);
 			}
 
 			echo '</table>';
 
-			//"Details" link.
+			// "Details" link.
 			echo '<div class="row-actions">';
 			printf(
 				'<span><a href="#" class="blc-details-button" title="%s">%s</a></span>',
-				esc_attr(__('Show more info about this link', 'broken-link-checker')),
-				_x('Details', 'link in the "Status" column', 'broken-link-checker')
+				esc_attr( __( 'Show more info about this link', 'broken-link-checker' ) ),
+				_x( 'Details', 'link in the "Status" column', 'broken-link-checker' )
 			);
 			echo '</div>';
 		}
@@ -667,72 +670,72 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		/**
 		* @param blcLink $link
 		*/
-		function column_new_url($link){
+		function column_new_url( $link ) {
 			?>
-			<a href="<?php print esc_url($link->url); ?>"
+			<a href="<?php print esc_url( $link->url ); ?>"
 			target='_blank'
 			class='blc-link-url'
-			title="<?php echo esc_attr($link->url); ?>"
-			data-editable-url="<?php echo esc_attr($link->url); ?>">
-				<?php print esc_html($link->url); ?></a>
+			title="<?php echo esc_attr( $link->url ); ?>"
+			data-editable-url="<?php echo esc_attr( $link->url ); ?>">
+				<?php print esc_html( $link->url ); ?></a>
 			<?php
-			//Output inline action links for the link/URL
+			// Output inline action links for the link/URL.
 			$actions = array();
 
-			$actions['edit'] = "<a href='javascript:void(0)' class='blc-edit-button' title='" . esc_attr( __('Edit this link' , 'broken-link-checker') ) . "'>". __('Edit URL' , 'broken-link-checker') ."</a>";
+			$actions['edit'] = "<a href='javascript:void(0)' class='blc-edit-button' title='" . esc_attr( __('Edit this link' , 'broken-link-checker') ) . "'>". __( 'Edit URL' , 'broken-link-checker' ) . '</a>';
 
-			$actions['delete'] = "<a class='submitdelete blc-unlink-button' title='" . esc_attr( __('Remove this link from all posts', 'broken-link-checker') ). "' ".
-				"href='javascript:void(0);'>" . __('Unlink', 'broken-link-checker') . "</a>";
+			$actions['delete'] = "<a class='submitdelete blc-unlink-button' title='" . esc_attr( __( 'Remove this link from all posts', 'broken-link-checker') ). "' ".
+				"href='javascript:void(0);'>" . __( 'Unlink', 'broken-link-checker' ) . '</a>';
 
-			if ( $link->broken || $link->warning ){
+			if ( $link->broken || $link->warning ) {
 				$actions['blc-discard-action'] = sprintf(
 					'<a href="#" title="%s" class="blc-discard-button">%s</a>',
-					esc_attr(__('Remove this link from the list of broken links and mark it as valid', 'broken-link-checker')),
-					__('Not broken', 'broken-link-checker')
+					esc_attr( __( 'Remove this link from the list of broken links and mark it as valid', 'broken-link-checker' ) ),
+					__( 'Not broken', 'broken-link-checker' )
 				);
 			}
 
-			if ( !$link->dismissed && ($link->broken || $link->warning || ($link->redirect_count > 0)) ) {
+			if ( ! $link->dismissed && ( $link->broken || $link->warning || ( $link->redirect_count > 0 ) ) ) {
 				$actions['blc-dismiss-action'] = sprintf(
 					'<a href="#" title="%s" class="blc-dismiss-button">%s</a>',
-					esc_attr(__('Hide this link and do not report it again unless its status changes' , 'broken-link-checker')),
-					__('Dismiss', 'broken-link-checker')
+					esc_attr( __( 'Hide this link and do not report it again unless its status changes' , 'broken-link-checker' ) ),
+					__( 'Dismiss', 'broken-link-checker' )
 				);
 			} else if ( $link->dismissed ) {
 				$actions['blc-undismiss-action'] = sprintf(
 					'<a href="#" title="%s" class="blc-undismiss-button">%s</a>',
-					esc_attr(__('Undismiss this link', 'broken-link-checker')),
-					__('Undismiss', 'broken-link-checker')
+					esc_attr( __( 'Undismiss this link', 'broken-link-checker' ) ),
+					__( 'Undismiss', 'broken-link-checker' )
 				);
 			}
 
 			$actions['blc-recheck-action'] = sprintf(
 				'<a href="#" class="blc-recheck-button">%s</a>',
-				__('Recheck', 'broken-link-checker')
+				__( 'Recheck', 'broken-link-checker' )
 			);
 
-			if ( $link->redirect_count > 0 && !empty($link->final_url) && ($link->url != $link->final_url) ) {
+			if ( $link->redirect_count > 0 && ! empty( $link->final_url ) && ( $link->url != $link->final_url ) ) {
 				//TODO: Check if at least one instance has an editable URL. Otherwise this won't work.
 				$actions['blc-deredirect-action'] = sprintf(
 					'<a href="#" class="blc-deredirect-button" title="%s">%s</a>',
-					__('Replace this redirect with a direct link', 'broken-link-checker'),
-					_x('Fix redirect', 'link action; replace one redirect with a direct link', 'broken-link-checker')
+					__( 'Replace this redirect with a direct link', 'broken-link-checker' ),
+					_x( 'Fix redirect', 'link action; replace one redirect with a direct link', 'broken-link-checker' )
 				);
 			}
 
-			//Only show the enabled actions.
+			// Only show the enabled actions.
 			$conf = blc_get_configuration();
-			foreach($conf->get('show_link_actions', $actions) as $name => $enabled) {
-				if ( !$enabled ) {
-					unset($actions[$name]);
+			foreach ( $conf->get( 'show_link_actions', $actions ) as $name => $enabled) {
+				if ( ! $enabled ) {
+					unset( $actions[ $name ] );
 				}
 			}
 
-			//Wrap actions with <span></span> and separate them with | characters.
-			//Basically, this emulates the HTML structure that WP uses for post actions under Posts -> All Posts.
+			// Wrap actions with <span></span> and separate them with | characters.
+			// Basically, this emulates the HTML structure that WP uses for post actions under Posts -> All Posts.
 			$spans = array();
 			$is_first_action = true;
-			foreach($actions as $name => $html) {
+			foreach ( $actions as $name => $html ) {
 				$spans[] = sprintf(
 					'<span class="%s">%s%s</span>',
 					esc_attr($name),
@@ -743,13 +746,13 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			}
 
 			echo '<div class="row-actions">';
-			echo implode('', $spans);
+			echo implode( '', $spans );
 			echo '</div>';
 
 			?>
 			<div class="blc-url-editor-buttons">
-				<input type="button" class="button-secondary cancel alignleft blc-cancel-button" value="<?php echo esc_attr(__('Cancel', 'broken-link-checker')); ?>" />
-				<input type="button" class="button-primary save alignright blc-update-url-button" value="<?php echo esc_attr(__('Update URL', 'broken-link-checker')); ?>" />
+				<input type="button" class="button-secondary cancel alignleft blc-cancel-button" value="<?php echo esc_attr( __( 'Cancel', 'broken-link-checker' ) ); ?>" />
+				<input type="button" class="button-primary save alignright blc-update-url-button" value="<?php echo esc_attr( __( 'Update URL', 'broken-link-checker' ) ); ?>" />
 				<img class="waiting" style="display:none;" src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" />
 			</div>
 			<?php
@@ -759,24 +762,24 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param blcLink $link
 		* @param blcLinkInstance[] $instances
 		*/
-		function column_used_in($link, $instances){
+		function column_used_in( $link, $instances ) {
 			echo '<span class="blc-link-id" style="display:none;">',
 					$link->link_id,
 				'</span>';
 
-			if ( !empty($instances) ){
+			if ( ! empty( $instances ) ) {
 				/** @var $instance blcLinkInstance */
-				$instance = reset($instances);
+				$instance = reset( $instances );
 				echo $instance->ui_get_source();
 
 				$actions = $instance->ui_get_action_links();
 
 				echo '<div class="row-actions">';
-				echo implode(' | </span>', $actions);
+				echo implode( ' | </span>', $actions );
 				echo '</div>';
 
 			} else {
-				_e("[An orphaned link! This is a bug.]", 'broken-link-checker');
+				_e( '[An orphaned link! This is a bug.]', 'broken-link-checker' );
 			}
 		}
 
@@ -784,21 +787,21 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param blcLink $link
 		* @param blcLinkInstance[] $instances
 		*/
-		function column_new_link_text($link, $instances){
-			if ( empty($instances) ){
+		function column_new_link_text( $link, $instances ) {
+			if ( empty( $instances ) ) {
 				echo '<em>N/A</em>';
 			} else {
-				$instance = reset($instances); /** @var blcLinkInstance $instance */
+				$instance = reset( $instances ); /** @var blcLinkInstance $instance */
 				echo $instance->ui_get_link_text();
 			}
 		}
 
-		function column_redirect_url($link, $instances) {
+		function column_redirect_url( $link, $instances ) {
 			if ( $link->redirect_count > 0 ) {
 				printf(
 					'<a href="%1$s" target="_blank" class="blc-redirect-url" title="%1$s">%2$s</a>',
-					esc_attr($link->final_url),
-					esc_html($link->final_url)
+					esc_attr( $link->final_url ),
+					esc_html( $link->final_url )
 				);
 			}
 		}
@@ -814,9 +817,9 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param string $searched_link_type Optional. The required container/parser type.
 		* @return array Sorted array.
 		*/
-		function sort_instances_for_display($instances, $searched_link_type = ''){
+		function sort_instances_for_display( $instances, $searched_link_type = '' ) {
 			$this->searched_link_type = $searched_link_type;
-			usort($instances, array($this, 'compare_link_instances'));
+			usort( $instances, array( $this, 'compare_link_instances' ) );
 			return $instances;
 		}
 
@@ -829,52 +832,52 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param blcLinkInstance $b
 		* @return int
 		*/
-		function compare_link_instances($a, $b){
-			if ( !empty($this->searched_link_type) ){
-				if ( ($a->container_type == $this->searched_link_type) || ($a->parser_type == $this->searched_link_type) ){
-					if ( ($b->container_type == $this->searched_link_type) || ($b->parser_type == $this->searched_link_type) ){
+		function compare_link_instances( $a, $b ) {
+			if ( ! empty( $this->searched_link_type ) ) {
+				if ( ( $a->container_type == $this->searched_link_type ) || ( $a->parser_type == $this->searched_link_type ) ) {
+					if ( ( $b->container_type == $this->searched_link_type ) || ( $b->parser_type == $this->searched_link_type ) ) {
 						return 0;
 					} else {
 						return -1;
 					}
 				} else {
-					if ( ($b->container_type == $this->searched_link_type) || ($b->parser_type == $this->searched_link_type) ){
+					if ( ( $b->container_type == $this->searched_link_type ) || ( $b->parser_type == $this->searched_link_type ) ) {
 						return 1;
 					}
 				}
 			}
 
-			return strcmp($a->container_type, $b->container_type);
+			return strcmp( $a->container_type, $b->container_type );
 		}
 
-		protected function inline_editor($visible_columns) {
+		protected function inline_editor( $visible_columns ) {
 			?>
 			<table style="display: none;"><tbody>
 				<tr id="blc-inline-edit-row" class="blc-inline-editor">
-					<td class="blc-colspan-change" colspan="<?php echo count($visible_columns); ?>">
+					<td class="blc-colspan-change" colspan="<?php echo count( $visible_columns ); ?>">
 						<div class="blc-inline-editor-content">
-							<h4><?php echo _x('Edit Link', 'inline editor title', 'broken-link-checker'); ?></h4>
+							<h4><?php echo _x( 'Edit Link', 'inline editor title', 'broken-link-checker' ); ?></h4>
 
 							<label>
-								<span class="title"><?php echo _x('Text', 'inline link editor', 'broken-link-checker'); ?></span>
+								<span class="title"><?php echo _x( 'Text', 'inline link editor', 'broken-link-checker' ); ?></span>
 								<span class="blc-input-text-wrap"><input type="text" name="link_text" value="" class="blc-link-text-field" /></span>
 							</label>
 
 							<label>
-								<span class="title"><?php echo _x('URL', 'inline link editor', 'broken-link-checker'); ?></span>
+								<span class="title"><?php echo _x( 'URL', 'inline link editor', 'broken-link-checker' ); ?></span>
 								<span class="blc-input-text-wrap"><input type="text" name="link_url" value="" class="blc-link-url-field" /></span>
 							</label>
 
 							<div class="blc-url-replacement-suggestions" style="display: none;">
-								<h4><?php echo _x('Suggestions', 'inline link editor', 'broken-link-checker'); ?></h4>
+								<h4><?php echo _x( 'Suggestions', 'inline link editor', 'broken-link-checker' ); ?></h4>
 								<ul class="blc-suggestion-list">
 									<li>...</li>
 								</ul>
 							</div>
 
 							<div class="submit blc-inline-editor-buttons">
-								<input type="button" class="button-secondary cancel alignleft blc-cancel-button" value="<?php echo esc_attr(__('Cancel', 'broken-link-checker')); ?>" />
-								<input type="button" class="button-primary save alignright blc-update-link-button" value="<?php echo esc_attr(__('Update', 'broken-link-checker')); ?>" />
+								<input type="button" class="button-secondary cancel alignleft blc-cancel-button" value="<?php echo esc_attr( __( 'Cancel', 'broken-link-checker' ) ); ?>" />
+								<input type="button" class="button-primary save alignright blc-update-link-button" value="<?php echo esc_attr( __( 'Update', 'broken-link-checker' ) ); ?>" />
 
 								<img class="waiting" style="display:none;" src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" />
 								<div class="clear"></div>
@@ -886,7 +889,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 			<ul id="blc-suggestion-template" style="display: none;">
 				<li>
-					<input type="button" class="button-secondary blc-use-url-button" value="<?php echo esc_attr(__('Use this URL', 'broken-link-checker')); ?>" />
+					<input type="button" class="button-secondary blc-use-url-button" value="<?php echo esc_attr( __( 'Use this URL', 'broken-link-checker' ) ); ?>" />
 
 					<div class="blc-suggestion-details">
 						<span class="blc-suggestion-name">
