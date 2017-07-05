@@ -314,23 +314,23 @@ if ( ! class_exists( 'blcUtility' ) ) {
 	* @param integer $cache How long the load averages may be cached, in seconds. Set to 0 to get maximally up-to-date data.
 	* @return array|null Array, or NULL if retrieving load data is impossible (e.g. when running on a Windows box).
 	*/
-		static function get_server_load($cache = 5){
+		static function get_server_load( $cache = 5 ) {
 			static $cached_load = null;
 			static $cached_when = 0;
 
-			if ( !empty($cache) && ((time() - $cached_when) <= $cache) ){
+			if ( ! empty( $cache ) && ((time() - $cached_when) <= $cache) ) {
 				return $cached_load;
 			}
 
 			$load = null;
 
-			if ( function_exists('sys_getloadavg') ){
+			if ( function_exists( 'sys_getloadavg' ) ) {
 				$load = sys_getloadavg();
 			} else {
 				$loadavg_file = '/proc/loadavg';
-				if (@is_readable($loadavg_file)) {
-					$load = explode(' ',file_get_contents($loadavg_file));
-					$load = array_map('floatval', $load);
+				if ( @is_readable( $loadavg_file ) ) {
+					$load = explode( ' ', file_get_contents( $loadavg_file ) );
+					$load = array_map( 'floatval', $load );
 				}
 			}
 
@@ -346,20 +346,20 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		* @param string $charset The character encoding of the $url parameter. Defaults to the encoding set in Settings -> Reading.
 		* @return string
 		*/
-		static function idn_to_ascii($url, $charset = ''){
+		static function idn_to_ascii( $url, $charset = '' ) {
 			$idn = blcUtility::get_idna_converter();
-			if ( $idn != null ){
-				if ( empty($charset) ){
-					$charset = get_bloginfo('charset');
+			if ( $idn != null ) {
+				if ( empty( $charset ) ) {
+					$charset = get_bloginfo( 'charset' );
 				}
 
-				//Encode only the host
-				if ( preg_match('@(\w+:/*)?([^/:]+)(.*$)?@s', $url, $matches) ){
+				// Encode only the host.
+				if ( preg_match( '@(\w+:/*)?([^/:]+)(.*$)?@s', $url, $matches ) ) {
 					$host = $matches[2];
-					if ( (strtoupper($charset) != 'UTF-8') && (strtoupper($charset) != 'UTF8') ){
-						$host = encode_utf8($host, $charset, true);
+					if ( ( strtoupper( $charset ) != 'UTF-8') && ( strtoupper( $charset ) != 'UTF8') ) {
+						$host = encode_utf8( $host, $charset, true );
 					}
-					$host = $idn->encode($host);
+					$host = $idn->encode( $host );
 					$url = $matches[1] . $host . $matches[3];
 				}
 			}
@@ -373,10 +373,10 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		* @param string $url
 		* @return string
 		*/
-		static function idn_to_utf8($url){
+		static function idn_to_utf8( $url ) {
 			$idn = blcUtility::get_idna_converter();
-			if ( $idn != null ){
-				$url = $idn->decode($url);
+			if ( null !== $idn ) {
+				$url = $idn->decode( $url );
 			}
 
 			return $url;
@@ -387,9 +387,9 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		*
 		* @return idna_convert|null Either an instance of IDNA converter, or NULL if the converter class is not available
 		*/
-		static function get_idna_converter(){
+		static function get_idna_converter() {
 			static $idn = null;
-			if ( ($idn == null) && class_exists('idna_convert') ){
+			if ( ( null === $idn ) && class_exists( 'idna_convert' ) ) {
 				$idn = new idna_convert();
 			}
 			return $idn;
@@ -404,15 +404,14 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		* @param int $max
 		* @return float
 		*/
-		public static function constrained_hash($input, $min = 0, $max = 1) {
+		public static function constrained_hash( $input, $min = 0, $max = 1 ) {
 			$bytes_to_use = 3;
 			$md5_char_count = 32;
-			$hash = substr(md5($input), $md5_char_count - $bytes_to_use*2);
-			$hash = intval(hexdec($hash));
-			return  $min + (($max - $min) * ($hash / (pow(2, $bytes_to_use * 8) - 1)));
+			$hash = substr( md5( $input ), $md5_char_count - $bytes_to_use * 2 );
+			$hash = intval( hexdec( $hash ) );
+			return  $min + ( ( $max - $min ) * ( $hash / ( pow( 2, $bytes_to_use * 8 ) - 1) ) );
 		}
 
 	}//class
 
 }//class_exists
-
