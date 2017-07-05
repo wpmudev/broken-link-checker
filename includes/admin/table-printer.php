@@ -40,14 +40,14 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 
 		/**
-		* Print the entire link table and associated navigation elements.
-		*
-		* @param array $current_filter
-		* @param string $layout
-		* @param array $visible_columns
-		* @param bool $compact
-		* @return void
-		*/
+		 * Print the entire link table and associated navigation elements.
+		 *
+		 * @param array $current_filter
+		 * @param string $layout
+		 * @param array $visible_columns
+		 * @param bool $compact
+		 * @return void
+		 */
 		function print_table( $current_filter, $layout = 'flexible', $visible_columns = null, $compact = false ) {
 			$this->current_filter = $current_filter;
 			$this->page = $current_filter['page'];
@@ -57,7 +57,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			if ( empty( $visible_columns ) ) {
 				$visible_columns = $current_layout;
 			}
-			//Only allow columns actually present in this layout
+			// Only allow columns actually present in this layout.
 			$visible_columns = array_intersect( $visible_columns, $current_layout );
 
 			echo '<form id="blc-bulk-action-form" action="' . esc_attr( $this->neutral_current_url ) . '" method="post">';
@@ -65,7 +65,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 			// Top navigation.
 			$this->prepare_nav_html();
-			$this->navigation($compact);
+			$this->navigation( $compact );
 
 			// Table header.
 			$table_classes = array( 'widefat' );
@@ -78,37 +78,37 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			$table_classes[] = 'base-filter-' . $current_filter['base_filter'];
 			printf(
 				'<table class="%s" id="blc-links"><thead><tr>',
-				implode(' ', $table_classes)
+				implode( ' ', $table_classes )
 			);
 
 			// The select-all checkbox.
 			echo '<th scope="col" class="column-checkbox check-column" id="cb"><input type="checkbox" /></th>';
 
-			//Column headers
-			foreach( $current_layout as $column_id ) {
+			// Column headers.
+			foreach ( $current_layout as $column_id ) {
 				$column = $this->columns[$column_id];
 
 				$column_classes = array( 'column-' . $column_id );
 				if ( isset( $column['class'] ) ){
 					$column_classes[] = $column['class'];
 				}
-				if ( !in_array( $column_id, $visible_columns ) ) {
+				if ( ! in_array( $column_id, $visible_columns ) ) {
 					$column_classes[] = 'hidden';
 				}
 
 				$heading = $column['heading'];
-				if ( isset( $column['sortable']) && $column['sortable'] ) {
+				if ( isset( $column['sortable'] ) && $column['sortable'] ) {
 					$orderby = $column['orderby'];
-					$current_orderby = isset($_GET['orderby']) ? $_GET['orderby'] : '';
-					$current_order = isset($_GET['order']) ? $_GET['order'] : 'asc';
-					if ( !in_array($current_order, array('asc', 'desc')) ) {
+					$current_orderby = isset( $_GET['orderby'] ) ? $_GET['orderby'] : '';
+					$current_order = isset( $_GET['order'] ) ? $_GET['order'] : 'asc';
+					if ( ! in_array( $current_order, array('asc', 'desc') ) ) {
 						$current_order = 'asc';
 					}
 
 					if ( $orderby == $current_orderby ) {
 						$column_classes[] = 'sorted';
 						$column_classes[] = $current_order;
-						$order = ($current_order == 'asc') ? 'desc' : 'asc'; //Reverse the sort direction
+						$order = ( 'asc' == $current_order ) ? 'desc' : 'asc'; //Reverse the sort direction
 					} else {
 						$order = 'asc';
 						$column_classes[] = 'desc';
@@ -127,70 +127,70 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 
 				printf(
 					'<th scope="col" class="%s"%s>%s</th>',
-					implode(' ', $column_classes),
-					isset($column['id']) ? ' id="' . $column['id'] . '"' : '',
+					implode( ' ', $column_classes ),
+					isset ( $column['id'] ) ? ' id="' . $column['id'] . '"' : '',
 					$heading
 				);
 			}
 			echo '</tr></thead>';
 
-			//Table body
+			// Table body.
 			echo '<tbody id="the-list">';
-			$this->bulk_edit_form($visible_columns);
+			$this->bulk_edit_form( $visible_columns );
 			$rownum = 0;
-			foreach ($this->current_filter['links'] as $link) {
+			foreach ( $this->current_filter['links'] as $link ) {
 				$rownum++;
-				$this->link_row($link, $current_layout, $visible_columns, $rownum);
-				$this->link_details_row($link, $visible_columns, $rownum);
+				$this->link_row( $link, $current_layout, $visible_columns, $rownum );
+				$this->link_details_row( $link, $visible_columns, $rownum );
 			}
 			echo '</tbody></table>';
 
-			//Bottom navigation
-			$this->navigation($compact, '2');
+			// Bottom navigation.
+			$this->navigation( $compact, '2' );
 			echo '</form>';
 
-			//Inline editor (hidden by default, JS will move it to the right place).
-			$this->inline_editor($visible_columns);
+			// Inline editor (hidden by default, JS will move it to the right place).
+			$this->inline_editor( $visible_columns );
 		}
 
 		/**
-		* Print the "Bulk Actions" dropdown and navigation links
-		*
-		* @param bool $table_compact Whether to use the full or compact view.
-		* @param string $suffix Optional. Appended to ID and name attributes of the bulk action dropdown.
-		* @return void
-		*/
-		function navigation($table_compact = false, $suffix = ''){
-			//Display the "Bulk Actions" dropdown
-			echo '<div class="tablenav">',
-					'<div class="alignleft actions">',
-						'<select name="action', $suffix ,'" id="blc-bulk-action', $suffix ,'">',
-							$this->bulk_actions_html,
-						'</select>',
-					' <input type="submit" name="doaction', $suffix ,'" id="doaction',$suffix,'" value="',
-						esc_attr(__('Apply', 'broken-link-checker')),
-						'" class="button-secondary action">',
-					'</div>';
+		 * Print the "Bulk Actions" dropdown and navigation links
+		 *
+		 * @param bool $table_compact Whether to use the full or compact view.
+		 * @param string $suffix Optional. Appended to ID and name attributes of the bulk action dropdown.
+		 * @return void
+		 */
+		function navigation( $table_compact = false, $suffix = '' ) {
+			// Display the "Bulk Actions" dropdown.
+			echo '<div class="tablenav">
+					<div class="alignleft actions">
+						<select name="action' . $suffix . '" id="blc-bulk-action' . $suffix . '">' .
+							$this->bulk_actions_html .
+						'</select>
+					<input type="submit" name="doaction' . $suffix . '" id="doaction' . $suffix . '" value="',
+						esc_attr( __( 'Apply', 'broken-link-checker' ) ) .
+						'" class="button-secondary action">
+					</div>';
 
-			//Display pagination links
-			if ( !empty($this->pagination_html) ){
+			// Display pagination links.
+			if ( ! empty( $this->pagination_html ) ) {
 				echo $this->pagination_html;
 			}
 
-			//Display the view switch (only in the top nav. area)
-			if ( empty($suffix) ){
+			// Display the view switch (only in the top nav. area).
+			if ( empty( $suffix ) ) {
 			?>
 
 			<div class="view-switch">
 				<a
-					href="<?php echo esc_url(add_query_arg('compact', '1', $_SERVER['REQUEST_URI'])) ?>"
+					href="<?php echo esc_url( add_query_arg( 'compact', '1', $_SERVER['REQUEST_URI'] ) ) ?>"
 					class="view-list <?php if ( $table_compact ) echo 'current'; ?>"
-					title="<?php echo esc_attr(__('Compact View', 'broken-link-checker')); ?>">
+					title="<?php echo esc_attr( __( 'Compact View', 'broken-link-checker' ) ); ?>">
 				</a>
 				<a
-					href="<?php echo esc_url(add_query_arg('compact', '0', $_SERVER['REQUEST_URI'])) ?>"
-					class="view-excerpt <?php if ( !$table_compact ) echo 'current'; ?>"
-					title="<?php echo esc_attr(__('Detailed View', 'broken-link-checker')); ?>">
+					href="<?php echo esc_url( add_query_arg( 'compact', '0', $_SERVER['REQUEST_URI'] ) ) ?>"
+					class="view-excerpt <?php if ( ! $table_compact ) echo 'current'; ?>"
+					title="<?php echo esc_attr( __( 'Detailed View', 'broken-link-checker' ) ); ?>">
 				</a>
 			</div>
 
@@ -208,33 +208,33 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		function setup_columns(){
 			$this->columns = array(
 				'status' => array(
-					'heading' => __('Status', 'broken-link-checker'),
-					'content' => array($this, 'column_status'),
+					'heading' => __( 'Status', 'broken-link-checker' ),
+					'content' => array( $this, 'column_status' ),
 				),
 
 				'new-url' => array(
-					'heading' => __('URL', 'broken-link-checker'),
-					'content' => array($this, 'column_new_url'),
+					'heading' => __( 'URL', 'broken-link-checker' ),
+					'content' => array( $this, 'column_new_url' ),
 					'sortable' => true,
 					'orderby' => 'url',
 				),
 
 				'used-in' => array(
-					'heading' => __('Source', 'broken-link-checker'),
+					'heading' => __( 'Source', 'broken-link-checker' ),
 					'class' => 'column-title',
-					'content' => array($this, 'column_used_in'),
+					'content' => array( $this, 'column_used_in' ),
 				),
 
 				'new-link-text' => array(
-					'heading' => __('Link Text', 'broken-link-checker'),
-					'content' => array($this, 'column_new_link_text'),
+					'heading' => __( 'Link Text', 'broken-link-checker' ),
+					'content' => array( $this, 'column_new_link_text' ),
 					'sortable' => true,
 					'orderby' => 'link_text',
 				),
 
 				'redirect-url' => array(
-					'heading' => __('Redirect URL', 'broken-link-checker'),
-					'content' => array($this, 'column_redirect_url'),
+					'heading' => __( 'Redirect URL', 'broken-link-checker' ),
+					'content' => array( $this, 'column_redirect_url' ),
 					'sortable' => true,
 					'orderby' => 'redirect_url',
 				),
@@ -246,10 +246,10 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		*
 		* @return void
 		*/
-		function setup_layouts(){
+		function setup_layouts() {
 			$this->layouts = array(
-				'classic' =>  array('used-in', 'new-link-text', 'new-url'),
-				'flexible' => array('new-url', 'status', 'new-link-text', 'redirect-url', 'used-in', ),
+				'classic' => array( 'used-in', 'new-link-text', 'new-url' ),
+				'flexible' => array( 'new-url', 'status', 'new-link-text', 'redirect-url', 'used-in' ),
 			);
 		}
 
@@ -259,13 +259,13 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 		* @param string $layout Layout ID.
 		* @return array Associative array of column data indexed by column ID.
 		*/
-		function get_layout_columns($layout){
-			if ( isset($this->layouts[$layout]) ){
+		function get_layout_columns( $layout ) {
+			if ( isset( $this->layouts[ $layout ] ) ) {
 
 				$result = array();
-				foreach($this->layouts[$layout] as $column_id){
-					if ( isset($this->columns[$column_id]) )
-						$result[$column_id] = $this->columns[$column_id];
+				foreach ( $this->layouts[ $layout ] as $column_id ) {
+					if ( isset( $this->columns[ $column_id ] ) )
+						$result[ $column_id ] = $this->columns[ $column_id ];
 				}
 				return $result;
 
