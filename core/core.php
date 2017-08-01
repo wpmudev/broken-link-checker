@@ -1,13 +1,11 @@
 <?php
-
 /**
  * Simple function to replicate PHP 5 behaviour
  */
-if ( !function_exists( 'microtime_float' ) ) {
-	function microtime_float()
-	{
-	    list($usec, $sec) = explode(" ", microtime());
-	    return ((float)$usec + (float)$sec);
+if ( ! function_exists( 'microtime_float' ) ) {
+	function microtime_float() {
+		list($usec, $sec) = explode( ' ', microtime() );
+		return ( (float)$usec + (float)$sec);
 	}
 }
 
@@ -19,14 +17,13 @@ require BLC_DIRECTORY . '/includes/transactions-manager.php';
 if (!class_exists('wsBrokenLinkChecker')) {
 
 class wsBrokenLinkChecker {
-    var $conf;
-
+	var $conf;
 	var $loader;
-    var $my_basename = '';
+	var $my_basename = '';
 
-    var $db_version; 		//The required version of the plugin's DB schema.
+	var $db_version; 		//The required version of the plugin's DB schema.
 
-    var $execution_start_time; 	//Used for a simple internal execution timer in start_timer()/execution_time()
+	var $execution_start_time; 	//Used for a simple internal execution timer in start_timer()/execution_time()
 
 	private $is_textdomain_loaded = false;
 
@@ -79,13 +76,12 @@ class wsBrokenLinkChecker {
         $this->setup_cron_events();
 
         //Set hooks that listen for our Cron actions
-    	add_action('blc_cron_email_notifications', array( $this, 'maybe_send_email_notifications' ));
-		add_action('blc_cron_check_links', array($this, 'cron_check_links'));
-		add_action('blc_cron_database_maintenance', array($this, 'database_maintenance'));
+    	add_action( 'blc_cron_email_notifications', array( $this, 'maybe_send_email_notifications' ) );
+		add_action( 'blc_cron_check_links', array( $this, 'cron_check_links' ) );
+		add_action( 'blc_cron_database_maintenance', array( $this, 'database_maintenance' ) );
 
         //Set the footer hook that will call the worker function via AJAX.
-        add_action('admin_footer', array($this,'admin_footer'));
-
+        add_action( 'admin_footer', array( $this,'admin_footer' ) );
 		//Add a "Screen Options" panel to the "Broken Links" page
 		add_screen_options_panel(
 			'blc-screen-options',
@@ -97,7 +93,7 @@ class wsBrokenLinkChecker {
 		);
 
 		//Display an explanatory note on the "Tools -> Broken Links -> Warnings" page.
-		add_action('admin_notices', array($this, 'show_warnings_section_notice'));
+		add_action( 'admin_notices', array( $this, 'show_warnings_section_notice' ) );
 
         add_filter('cron_schedules', array( $this, 'cron_add_every_10_minutes'));
 
@@ -173,7 +169,7 @@ class wsBrokenLinkChecker {
 
     function dashboard_widget(){
         ?>
-        <p id='wsblc_activity_box'><?php _e('Loading...', 'broken-link-checker');  ?></p>
+        <p id='wsblc_activity_box'><?php _e( 'Loading...', 'broken-link-checker' );  ?></p>
         <script type='text/javascript'>
         	jQuery( function($){
         		var blc_was_autoexpanded = false;
@@ -474,11 +470,13 @@ class wsBrokenLinkChecker {
 			);
 
             //Parse the custom field list
-            $new_custom_fields = array_filter(preg_split('/[\r\n]+/', $cleanPost['blc_custom_fields'], -1, PREG_SPLIT_NO_EMPTY));
-
-            //Calculate the difference between the old custom field list and the new one (used later)
-            $diff1 = array_diff($new_custom_fields, $this->conf->options['custom_fields']);
-            $diff2 = array_diff($this->conf->options['custom_fields'], $new_custom_fields);
+            $new_custom_fields = array_filter( 
+				preg_split( '/[\r\n]+/', $cleanPost['blc_custom_fields'], -1, PREG_SPLIT_NO_EMPTY )
+			);
+            
+			//Calculate the difference between the old custom field list and the new one (used later)
+            $diff1 = array_diff( $new_custom_fields, $this->conf->options['custom_fields'] );
+            $diff2 = array_diff( $this->conf->options['custom_fields'], $new_custom_fields );
             $this->conf->options['custom_fields'] = $new_custom_fields;
 
             //Parse the custom field list
@@ -668,7 +666,6 @@ class wsBrokenLinkChecker {
 
 		add_filter('blc-module-settings-custom_field', array($this, 'make_custom_field_input'), 10, 2);
 		add_filter('blc-module-settings-acf_field', array($this, 'make_acf_field_input'), 10, 2);
-
 		//Translate and markup-ify module headers for display
 		$modules = $moduleManager->get_modules_by_category('', true, true);
 
@@ -1415,17 +1412,21 @@ class wsBrokenLinkChecker {
      * @param array $current_settings The current plugin configuration.
      * @return string New extra HTML.
      */
-    function make_custom_field_input($html, $current_settings) {
-        $html .= '<span class="description">' . __('Enter the names of custom fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_name</code>.', 'broken-link-checker') . '</span>';
-        $html .= '<br><textarea name="blc_custom_fields" id="blc_custom_fields" cols="45" rows="4">';
-        if (isset($current_settings['custom_fields'])) {
+    function make_custom_field_input($html, $current_settings){
+    	$html .= '<span class="description">' . 
+					__(
+						'Enter the names of custom fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_name</code>.',
+						'broken-link-checker'
+					) .
+				 '</span>';
+    	$html .= '<br><textarea name="blc_custom_fields" id="blc_custom_fields" cols="45" rows="4">';
+        if( isset($current_settings['custom_fields']) ){
             $html .= esc_textarea(implode("\n", $current_settings['custom_fields']));
         }
         $html .= '</textarea>';
 
         return $html;
     }
-
     function make_acf_field_input($html, $current_settings) {
         $html .= '<span class="description">' . __('Enter the keys of acf fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_586a3eaa4091b</code>.', 'broken-link-checker') . '</span>';
         $html .= '<br><textarea name="blc_acf_fields" id="blc_acf_fields" cols="45" rows="4">';
@@ -1436,7 +1437,6 @@ class wsBrokenLinkChecker {
 
         return $html;
     }
-
     /**
      * Enqueue CSS file for the plugin's Settings page.
      *
@@ -2085,8 +2085,8 @@ class wsBrokenLinkChecker {
 		check_admin_referer('bulk-action');
 
 		if ( count($selected_links) > 0 ){
-			$q = "UPDATE {$wpdb->prefix}blc_links 
-				  SET last_check_attempt = '0000-00-00 00:00:00' 
+			$q = "UPDATE {$wpdb->prefix}blc_links
+				  SET last_check_attempt = '0000-00-00 00:00:00'
 				  WHERE link_id IN (".implode(', ', $selected_links).")";
 			$changes = $wpdb->query($q);
 
