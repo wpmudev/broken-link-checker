@@ -46,6 +46,9 @@ if ( isset($blc_config_manager->options['check_comment_links']) ){
 if ( empty($blc_config_manager->options['custom_fields']) ){
 	$moduleManager->deactivate('custom_field');
 }
+if ( empty($blc_config_manager->options['acf_fields']) ){
+	$moduleManager->deactivate('acf_field');
+}
 
 //Prepare the database.
 $blclog->info('Upgrading the database...');

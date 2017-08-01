@@ -25,7 +25,7 @@ class blcTablePrinter {
 	var $layouts;
 	
 	
-	function blcTablePrinter($core){
+	function __construct($core){
 		$this->core = $core;
 		
 		//Initialize layout and column definitions

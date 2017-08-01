@@ -20,6 +20,8 @@ $blc_module_manager = blcModuleManager::getInstance(array(
 		'url_field',        //URL field parser
 		'comment',          //Comment container
 		'custom_field',     //Post metadata container (aka custom fields)
+		'acf_field',        //Post acf container (aka advanced custom fields)
+		'acf',              //acf parser
 		'post',             //Post content container
 		'page',             //Page content container
 		'youtube-checker',  //Video checker using the YouTube API
