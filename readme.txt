@@ -3,8 +3,8 @@ Contributors: freediver
 Donate link:
 Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, posts
 Requires at least: 3.2
-Tested up to: 4.4.1
-Stable tag: 1.11.2
+Tested up to: 4.8
+Stable tag: 1.11.3
 
 This plugin will check your posts, comments and other content for broken links and missing images, and notify you if any are found.
 
@@ -100,6 +100,9 @@ To upgrade your installation
 1. Reactivate the plugin. Your settings will be retained from the previous version.
 
 == Changelog ==
+
+= 1.11.3 =
+* Updated plugin information
 
 = 1.11.2 =
 * Fixed a compatibility issue
