@@ -436,7 +436,7 @@ jQuery(function($){
 
 		//Check the Wayback Machine for an archived version of the page.
 		$.getJSON(
-			'//archive.org/wayback/available?callback=?',
+			'https://archive.org/wayback/available?callback=?',
 			{ url: url },
 
 			function(data) {
@@ -455,6 +455,9 @@ jQuery(function($){
 					'-' + snapshot.timestamp.substr(4, 2) +
 					'-'	+ snapshot.timestamp.substr(6, 2);
 				var name = sprintf(iaSuggestionName, readableTimestamp);
+
+				//Enforce HTTPS by default
+				snapshot.url = (snapshot.url).replace( new RegExp("^http:", "m"), "https:");
 
 				//Display the suggestion.
 				var item = suggestionTemplate.clone();
