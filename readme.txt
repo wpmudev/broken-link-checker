@@ -101,6 +101,9 @@ To upgrade your installation
 
 == Changelog ==
 
+= 1.11.5 =
+* Fixed a PHP 5.2 compatibility issue
+
 = 1.11.4 =
 * Fixed a few more PHP 7.x/5.6 compatibility issues
 

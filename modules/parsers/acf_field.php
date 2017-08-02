@@ -16,8 +16,8 @@ ModuleHidden: true
 
 class blcACFParser extends blcParser {
 
-    var $supported_formats = ['acf_field'];
-    var $supported_containers = [];
+    var $supported_formats = array('acf_field');
+    var $supported_containers = array();
 
     /**
      * Parse a acf value.
@@ -28,10 +28,10 @@ class blcACFParser extends blcParser {
    * @return array An array of new blcLinkInstance objects.  
    */
 	function parse($content, $base_url = '', $default_link_text = ''){
-        $instances = [];
+        $instances = array();
 
         if ( !is_array($content) ){
-            $content = [$content];
+            $content = array($content);
         }
 
         foreach($content as $value){

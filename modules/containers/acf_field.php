@@ -239,7 +239,7 @@ class blcAcfMeta extends blcContainer {
     function ui_get_action_links($container_field) {
         //	    error_log(print_r('ui_get_action_links', true));
 
-        $actions = [];
+        $actions = array();
         if (!post_type_exists(get_post_type($this->container_id))) {
             return $actions;
         }
@@ -366,21 +366,61 @@ class blcAcfMeta extends blcContainer {
     }
 }
 
+class blcAcfExtractedFieldWalker
+{
+    private $keys;
+
+    private $selected_fields;
+
+    private $url_fields;
+
+    private $html_fields;
+
+    public function __construct(&$keys, $selected_fields, $url_fields, $html_fields)
+    {
+        $this->keys            = $keys;
+        $this->selected_fields = $selected_fields;
+        $this->url_fields      = $url_fields;
+        $this->html_fields     = $html_fields;
+    }
+
+    public function walk_function($item, $key)
+    {
+        $key = explode('|', str_replace('_field', '|field', $key));
+
+        if (is_array($key)) {
+            $key = $key[count($key) - 1];
+        }
+
+        if (in_array($key, $this->url_fields)) {
+            if (!filter_var($item, FILTER_VALIDATE_URL) === false) {
+                $this->keys[] = $key;
+            }
+        }
+
+        if (in_array($key, $this->html_fields)) {
+            if ($item != '') {
+                $this->keys[] = $key;
+            }
+        }
+    }
+}
+
 class blcAcfMetaManager extends blcContainerManager {
 
     var $container_class_name = 'blcAcfMeta';
 
-    protected $selected_fields = [];
+    protected $selected_fields = array();
 
     function init() {
         parent::init();
 
         //Figure out which custom fields we're interested in.
         if (is_array($this->plugin_conf->options['acf_fields'])) {
-            $prefix_formats = [
+            $prefix_formats = array(
                 'html' => 'html',
                 'acf_field' => 'acf_field',
-            ];
+            );
             foreach ($this->plugin_conf->options['acf_fields'] as $meta_name) {
                 //The user can add an optional "format:" prefix to specify the format of the custom field.
                 $parts = explode(':', $meta_name, 2);
@@ -394,14 +434,14 @@ class blcAcfMetaManager extends blcContainerManager {
         }
 
         //Intercept 2.9+ style metadata modification actions
-        add_action("acf/save_post", [$this, 'acf_save'], 10, 4);
+        add_action("acf/save_post", array($this, 'acf_save'), 10, 4);
 
         //When a post is deleted, also delete the custom field container associated with it.
-        add_action('delete_post', [$this, 'post_deleted']);
-        add_action('trash_post', [$this, 'post_deleted']);
+        add_action('delete_post', array($this, 'post_deleted'));
+        add_action('trash_post', array($this, 'post_deleted'));
 
         //Re-parse custom fields when a post is restored from trash
-        add_action('untrashed_post', [$this, 'post_untrashed']);
+        add_action('untrashed_post', array($this, 'post_untrashed'));
 
     }
 
@@ -412,6 +452,13 @@ class blcAcfMetaManager extends blcContainerManager {
      */
     function get_parseable_fields() {
         return $this->selected_fields;
+    }
+
+    function filterHtmlExtract($value) {
+        if ($value == 'html') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -440,25 +487,20 @@ class blcAcfMetaManager extends blcContainerManager {
         don't need to actually store the results anywhere in the container object().
         */
 
-        $preload = $load_wrapped_objects || in_array($purpose, [BLC_FOR_DISPLAY]);
+        $preload = $load_wrapped_objects || in_array($purpose, array(BLC_FOR_DISPLAY));
         if ($preload) {
-            $post_ids = [];
+            $post_ids = array();
             foreach ($containers as $container) {
                 $post_ids[] = $container->container_id;
             }
 
-            $args = ['include' => implode(',', $post_ids)];
+            $args = array('include' => implode(',', $post_ids));
             get_posts($args);
         }
 
         $selected_fields = $this->selected_fields;
 
-        $html_fields = array_filter($selected_fields, function ($value) {
-            if ($value == 'html') {
-                return true;
-            }
-            return false;
-        });
+        $html_fields = array_filter($selected_fields, array($this, 'filterHtmlExtract'));
 
         $url_fields = array_keys(array_diff($selected_fields, $html_fields));
         $html_fields = array_keys($html_fields);
@@ -466,7 +508,7 @@ class blcAcfMetaManager extends blcContainerManager {
         foreach ($containers as $key => $container) {
 
             $meta = get_metadata('post', $container->container_id);
-            $fields = [];
+            $fields = array();
 
             foreach ($meta as $field => $value) {
 
@@ -517,7 +559,7 @@ class blcAcfMetaManager extends blcContainerManager {
         global $blclog;
 
         //Only check custom fields on selected post types. By default, that's "post" and "page".
-        $post_types = ['post', 'page'];
+        $post_types = array('post', 'page');
         if (class_exists('blcPostTypeOverlord')) {
             $overlord = blcPostTypeOverlord::getInstance();
             $post_types = array_merge($post_types, $overlord->enabled_post_types);
@@ -604,42 +646,19 @@ class blcAcfMetaManager extends blcContainerManager {
 
         $selected_fields = $this->selected_fields;
 
-        $html_fields = array_filter($selected_fields, function ($value) {
-            if ($value == 'html') {
-                return true;
-            }
-
-            return false;
-        });
+        $html_fields = array_filter($selected_fields, array($this, 'filterHtmlExtract'));
 
         $url_fields = array_keys(array_diff($selected_fields, $html_fields));
 
         $html_fields = array_keys($html_fields);
         $selected_fields = array_keys($selected_fields);
 
-        $keys = [];
+        $keys = array();
         $fields = $_POST['acf'];
 
-        array_walk_recursive($fields, function ($item, $key) use (&$keys, $selected_fields, $url_fields, $html_fields) {
+        $acfWalk = new blcAcfExtractedFieldWalker($keys, $selected_fields, $url_fields, $html_fields);
 
-            $key = explode('|', str_replace('_field', '|field', $key));
-
-            if (is_array($key)) {
-                $key = $key[ count($key) - 1 ];
-            }
-
-            if (in_array($key, $url_fields)) {
-                if (!filter_var($item, FILTER_VALIDATE_URL) === false) {
-                    $keys[] = $key;
-                }
-            }
-
-            if (in_array($key, $html_fields)) {
-                if ($item != '') {
-                    $keys[] = $key;
-                }
-            }
-        });
+        array_walk_recursive($fields, array($acfWalk, 'walk_function'));
 
         if (empty($keys)) {
             return;

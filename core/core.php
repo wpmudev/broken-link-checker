@@ -106,10 +106,10 @@ class wsBrokenLinkChecker {
      */
     function cron_add_every_10_minutes( $schedules ) {
         // Adds once weekly to the existing schedules.
-        $schedules['10min'] = [
+        $schedules['10min'] = array(
             'interval' => 600,
             'display' => __('Every 10 minutes')
-        ];
+        );
 
         return $schedules;
     }

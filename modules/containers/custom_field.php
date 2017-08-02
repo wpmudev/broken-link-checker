@@ -591,7 +591,7 @@ class blcPostMetaManager extends blcContainerManager {
 	function post_deleted($post_id){
 		//Get the associated container object
 
-        $container = blcContainerHelper::get_container([$this->container_type, intval($post_id)]);
+        $container = blcContainerHelper::get_container(array($this->container_type, intval($post_id)));
         if ($container != null) {
             //Delete it
             $container->delete();
