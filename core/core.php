@@ -73,6 +73,7 @@ class wsBrokenLinkChecker {
 	    add_action( 'wp_ajax_blc_undismiss', array($this, 'ajax_undismiss') );
 
         //Add/remove Cron events
+        add_filter( 'cron_schedules', [ $this, 'cron_add_every_10_minutes' ] );
         $this->setup_cron_events();
 
         //Set hooks that listen for our Cron actions
@@ -95,7 +96,6 @@ class wsBrokenLinkChecker {
 		//Display an explanatory note on the "Tools -> Broken Links -> Warnings" page.
 		add_action( 'admin_notices', array( $this, 'show_warnings_section_notice' ) );
 
-        add_filter('cron_schedules', array( $this, 'cron_add_every_10_minutes'));
 
     }
 
@@ -470,10 +470,10 @@ class wsBrokenLinkChecker {
 			);
 
             //Parse the custom field list
-            $new_custom_fields = array_filter( 
+            $new_custom_fields = array_filter(
 				preg_split( '/[\r\n]+/', $cleanPost['blc_custom_fields'], -1, PREG_SPLIT_NO_EMPTY )
 			);
-            
+
 			//Calculate the difference between the old custom field list and the new one (used later)
             $diff1 = array_diff( $new_custom_fields, $this->conf->options['custom_fields'] );
             $diff2 = array_diff( $this->conf->options['custom_fields'], $new_custom_fields );
@@ -1413,7 +1413,7 @@ class wsBrokenLinkChecker {
      * @return string New extra HTML.
      */
     function make_custom_field_input($html, $current_settings){
-    	$html .= '<span class="description">' . 
+    	$html .= '<span class="description">' .
 					__(
 						'Enter the names of custom fields you want to check (one per line). If a field contains HTML code, prefix its name with <code>html:</code>. For example, <code>html:field_name</code>.',
 						'broken-link-checker'
