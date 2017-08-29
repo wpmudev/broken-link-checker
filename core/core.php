@@ -2634,6 +2634,7 @@ class wsBrokenLinkChecker {
 
 				//Check if we still have some execution time left
 				if( $this->execution_time() > $max_execution_time ){
+                    $transactionManager->commit();
 					//FB::log('The allotted execution time has run out');
 					$blclog->info('The allotted execution time has run out.');
 					$this->release_lock();
@@ -2642,6 +2643,7 @@ class wsBrokenLinkChecker {
 
 				//Check if the server isn't overloaded
 				if ( $this->server_too_busy() ){
+                    $transactionManager->commit();
 					//FB::log('Server overloaded, bailing out.');
 					$blclog->info('Server load too high, stopping.');
 					$this->release_lock();
