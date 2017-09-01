@@ -156,7 +156,7 @@ class blcPostTypeOverlord {
 			$current_link_ids = wp_list_pluck( $q_current_link_ids_results, 'link_id' );
 
 			// Go ahead and remove blc_instances for this container, blc_cleanup_links( $current_link_ids ) will find and remove any dangling links in the blc_links table
-			$wpdb->query( 'DELETE FROM `'.$wpdb->prefix.'_blc_instances` WHERE instance_id IN (\''.implode("', '", $current_instance_ids).'\')';
+			$wpdb->query( 'DELETE FROM `'.$wpdb->prefix.'_blc_instances` WHERE instance_id IN (\''.implode("', '", $current_instance_ids).'\')' );
 
 			//Clean up any dangling links
 			blc_cleanup_links( $current_link_ids );
