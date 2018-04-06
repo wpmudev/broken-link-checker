@@ -101,6 +101,12 @@ To upgrade your installation
 
 == Changelog ==
 
+= 1.11.7 =
+* Fixed a PHP 7.2 compatibility issue
+
+= 1.11.6 =
+* Fixed link check not saving
+
 = 1.11.5 =
 * Fixed a PHP 5.2 compatibility issue
 
