@@ -6,7 +6,7 @@ jQuery(function($){
 	//Refresh the "Status" box every 10 seconds
 	function blcUpdateStatus(){
 		$.getJSON(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_full_status',
 				'random' : Math.random()
@@ -15,7 +15,7 @@ jQuery(function($){
 				if ( data && ( typeof(data['text']) != 'undefined' ) ){
 					$('#wsblc_full_status').html(data.text);
 				} else {
-					$('#wsblc_full_status').html('<?php _e('[ Network error ]', 'broken-link-checker'); ?>');
+					$('#wsblc_full_status').html('<?php _e( '[ Network error ]', 'broken-link-checker' ); ?>');
 				}
 				
 				setTimeout(blcUpdateStatus, 10000);							
@@ -27,7 +27,7 @@ jQuery(function($){
 	//Refresh the avg. load display every 10 seconds
 	function blcUpdateLoad(){
 		$.get(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_current_load'
 			},
@@ -51,9 +51,9 @@ jQuery(function($){
 		var box = $('#blc-debug-info'); 
 		box.toggle();
 		if( box.is(':visible') ){
-			toggleButton.text('<?php _e('Hide debug info', 'broken-link-checker'); ?>');
+			toggleButton.text('<?php _e( 'Hide debug info', 'broken-link-checker' ); ?>');
 		} else {
-			toggleButton.text('<?php _e('Show debug info', 'broken-link-checker'); ?>');
+			toggleButton.text('<?php _e( 'Show debug info', 'broken-link-checker' ); ?>');
 		}
 		
 	});

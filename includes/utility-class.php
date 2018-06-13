@@ -7,10 +7,13 @@
 
 if ( ! function_exists( 'sys_get_temp_dir' ) ) {
 	function sys_get_temp_dir() {
-		if ( ! empty( $_ENV['TMP'] ) ) { return realpath( $_ENV['TMP'] ); }
-		if ( ! empty( $_ENV['TMPDIR'] ) ) { return realpath( $_ENV['TMPDIR'] ); }
-		if ( ! empty( $_ENV['TEMP'] ) ) { return realpath( $_ENV['TEMP'] ); }
-		$tempfile = tempnam( uniqid( rand(),TRUE ),'' );
+		if ( ! empty( $_ENV['TMP'] ) ) {
+			return realpath( $_ENV['TMP'] ); }
+		if ( ! empty( $_ENV['TMPDIR'] ) ) {
+			return realpath( $_ENV['TMPDIR'] ); }
+		if ( ! empty( $_ENV['TEMP'] ) ) {
+			return realpath( $_ENV['TEMP'] ); }
+		$tempfile = tempnam( uniqid( rand(), true ), '' );
 		if ( @file_exists( $tempfile ) ) {
 			unlink( $tempfile );
 			return realpath( dirname( $tempfile ) );
@@ -65,38 +68,38 @@ if ( ! class_exists( 'blcUtility' ) ) {
 			}
 		}
 
-	/**
-	* blcUtility::is_open_basedir()
-	* Checks if open_basedir is enabled
-	*
-	* @return bool
-	*/
-		static function is_open_basedir(){
+		/**
+		* blcUtility::is_open_basedir()
+		* Checks if open_basedir is enabled
+		*
+		* @return bool
+		*/
+		static function is_open_basedir() {
 			$open_basedir = ini_get( 'open_basedir' );
 			return $open_basedir && ( strtolower( $open_basedir ) != 'none' );
 		}
 
-	/**
-	* Truncate a string on a specified boundary character.
-	*
-	* @param string $text The text to truncate.
-	* @param integer $max_characters Return no more than $max_characters
-	* @param string $break Break on this character. Defaults to space.
-	* @param string $pad Pad the truncated string with this string. Defaults to an HTML ellipsis.
-	* @return string
-	*/
+		/**
+		* Truncate a string on a specified boundary character.
+		*
+		* @param string $text The text to truncate.
+		* @param integer $max_characters Return no more than $max_characters
+		* @param string $break Break on this character. Defaults to space.
+		* @param string $pad Pad the truncated string with this string. Defaults to an HTML ellipsis.
+		* @return string
+		*/
 		static function truncate( $text, $max_characters = 0, $break = ' ', $pad = '&hellip;' ) {
 			if ( strlen( $text ) <= $max_characters ) {
 				return $text;
 			}
 
-			$text = substr( $text, 0, $max_characters );
+			$text      = substr( $text, 0, $max_characters );
 			$break_pos = strrpos( $text, $break );
 			if ( false !== $break_pos ) {
 				$text = substr( $text, 0, $break_pos );
 			}
 
-			return $text.$pad;
+			return $text . $pad;
 		}
 
 		/**
@@ -109,16 +112,16 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		*
 		* The function returns a numerically indexed array of extracted tags. Each entry is an associative array
 		* with these keys :
-		* 	tag_name	- the name of the extracted tag, e.g. "a" or "img".
-		*	offset		- the numberic offset of the first character of the tag within the HTML source.
-		*	contents	- the inner HTML of the tag. This is always empty for self-closing tags.
-		*	attributes	- a name -> value array of the tag's attributes, or an empty array if the tag has none.
-		*	full_tag	- the entire matched tag, e.g. '<a href="http://example.com">example.com</a>'. This key
-		*		          will only be present if you set $return_the_entire_tag to true.
+		*   tag_name    - the name of the extracted tag, e.g. "a" or "img".
+		*   offset      - the numberic offset of the first character of the tag within the HTML source.
+		*   contents    - the inner HTML of the tag. This is always empty for self-closing tags.
+		*   attributes  - a name -> value array of the tag's attributes, or an empty array if the tag has none.
+		*   full_tag    - the entire matched tag, e.g. '<a href="http://example.com">example.com</a>'. This key
+		*                 will only be present if you set $return_the_entire_tag to true.
 		*
 		* @param string $html The HTML code to search for tags.
 		* @param string|array $tag The tag(s) to extract.
-		* @param bool $selfclosing	Whether the tag is self-closing or not. Setting it to null will force the script to try and make an educated guess.
+		* @param bool $selfclosing  Whether the tag is self-closing or not. Setting it to null will force the script to try and make an educated guess.
 		* @param bool $return_the_entire_tag Return the entire matched tag in 'full_tag' key of the results array.
 		* @param string $charset The character set of the HTML code. Defaults to ISO-8859-1.
 		*
@@ -182,9 +185,9 @@ if ( ! class_exists( 'blcUtility' ) ) {
 					if ( preg_match_all( $attribute_pattern, $match['attributes'][0], $attribute_data, PREG_SET_ORDER ) ) {
 						//Turn the attribute data into a name->value array
 						foreach ( $attribute_data as $attr ) {
-							if( ! empty( $attr['value_quoted'] ) ) {
+							if ( ! empty( $attr['value_quoted'] ) ) {
 								$value = $attr['value_quoted'];
-							} else if( ! empty( $attr['value_unquoted'] ) ) {
+							} elseif ( ! empty( $attr['value_unquoted'] ) ) {
 								$value = $attr['value_unquoted'];
 							} else {
 								$value = '';
@@ -198,13 +201,12 @@ if ( ! class_exists( 'blcUtility' ) ) {
 							$attributes[ $attr['name'] ] = $value;
 						}
 					}
-
 				}
 
 				$tag = array(
-					'tag_name' => $match['tag'][0],
-					'offset' => $match[0][1],
-					'contents' => ! empty( $match['contents'] ) ? $match['contents'][0] : '', // Empty for self-closing tags.
+					'tag_name'   => $match['tag'][0],
+					'offset'     => $match[0][1],
+					'contents'   => ! empty( $match['contents'] ) ? $match['contents'][0] : '', // Empty for self-closing tags.
 					'attributes' => $attributes,
 				);
 				if ( $return_the_entire_tag ) {
@@ -225,42 +227,42 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		* @return mixed Either the value of the requested cookie, or $default_value.
 		*/
 		static function get_cookie( $cookie_name, $default_value = '' ) {
-			if ( isset( $_COOKIE[$cookie_name] ) ) {
-				return $_COOKIE[$cookie_name];
+			if ( isset( $_COOKIE[ $cookie_name ] ) ) {
+				return $_COOKIE[ $cookie_name ];
 			} else {
 				return $default_value;
 			}
 		}
 
-	/**
-	* Format a time delta using a fuzzy format, e.g. '2 minutes ago', '2 days', etc.
-	*
-	* @param int $delta Time period in seconds.
-	* @param string $type Optional. The output template to use.
-	* @return string
-	*/
+		/**
+		* Format a time delta using a fuzzy format, e.g. '2 minutes ago', '2 days', etc.
+		*
+		* @param int $delta Time period in seconds.
+		* @param string $type Optional. The output template to use.
+		* @return string
+		*/
 		static function fuzzy_delta( $delta, $template = 'default' ) {
 
 			$templates = array(
 				'seconds' => array(
-					'default' => _n_noop('%d second', '%d seconds'),
-					'ago' => _n_noop('%d second ago', '%d seconds ago'),
+					'default' => _n_noop( '%d second', '%d seconds' ),
+					'ago'     => _n_noop( '%d second ago', '%d seconds ago' ),
 				),
 				'minutes' => array(
-					'default' => _n_noop('%d minute', '%d minutes'),
-					'ago' => _n_noop('%d minute ago', '%d minutes ago'),
+					'default' => _n_noop( '%d minute', '%d minutes' ),
+					'ago'     => _n_noop( '%d minute ago', '%d minutes ago' ),
 				),
-				'hours' => array(
-					'default' => _n_noop('%d hour', '%d hours'),
-					'ago' => _n_noop('%d hour ago', '%d hours ago'),
+				'hours'   => array(
+					'default' => _n_noop( '%d hour', '%d hours' ),
+					'ago'     => _n_noop( '%d hour ago', '%d hours ago' ),
 				),
-				'days' => array(
-					'default' => _n_noop('%d day', '%d days'),
-					'ago' => _n_noop('%d day ago', '%d days ago'),
+				'days'    => array(
+					'default' => _n_noop( '%d day', '%d days' ),
+					'ago'     => _n_noop( '%d day ago', '%d days ago' ),
 				),
-				'months' => array(
-					'default' => _n_noop('%d month', '%d months'),
-					'ago' => _n_noop('%d month ago', '%d months ago'),
+				'months'  => array(
+					'default' => _n_noop( '%d month', '%d months' ),
+					'ago'     => _n_noop( '%d month ago', '%d months ago' ),
 				),
 			);
 
@@ -286,8 +288,8 @@ if ( ! class_exists( 'blcUtility' ) ) {
 
 			return sprintf(
 				_n(
-					$templates[$units][$template][0],
-					$templates[$units][$template][1],
+					$templates[ $units ][ $template ][0],
+					$templates[ $units ][ $template ][1],
 					$delta,
 					'broken-link-checker'
 				),
@@ -295,30 +297,30 @@ if ( ! class_exists( 'blcUtility' ) ) {
 			);
 		}
 
-	/**
-	* Optimize the plugin's tables
-	*
-	* @return void
-	*/
-		static function optimize_database(){
+		/**
+		* Optimize the plugin's tables
+		*
+		* @return void
+		*/
+		static function optimize_database() {
 			global $wpdb; /** @var wpdb $wpdb */
 
 			$wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}blc_links, {$wpdb->prefix}blc_instances, {$wpdb->prefix}blc_synch" );
 		}
 
-	/**
-	* Get the server's load averages.
-	*
-	* Returns an array with three samples - the 1 minute avg, the 5 minute avg, and the 15 minute avg.
-	*
-	* @param integer $cache How long the load averages may be cached, in seconds. Set to 0 to get maximally up-to-date data.
-	* @return array|null Array, or NULL if retrieving load data is impossible (e.g. when running on a Windows box).
-	*/
+		/**
+		* Get the server's load averages.
+		*
+		* Returns an array with three samples - the 1 minute avg, the 5 minute avg, and the 15 minute avg.
+		*
+		* @param integer $cache How long the load averages may be cached, in seconds. Set to 0 to get maximally up-to-date data.
+		* @return array|null Array, or NULL if retrieving load data is impossible (e.g. when running on a Windows box).
+		*/
 		static function get_server_load( $cache = 5 ) {
 			static $cached_load = null;
 			static $cached_when = 0;
 
-			if ( ! empty( $cache ) && ((time() - $cached_when) <= $cache) ) {
+			if ( ! empty( $cache ) && ( ( time() - $cached_when ) <= $cache ) ) {
 				return $cached_load;
 			}
 
@@ -356,11 +358,11 @@ if ( ! class_exists( 'blcUtility' ) ) {
 				// Encode only the host.
 				if ( preg_match( '@(\w+:/*)?([^/:]+)(.*$)?@s', $url, $matches ) ) {
 					$host = $matches[2];
-					if ( ( strtoupper( $charset ) != 'UTF-8') && ( strtoupper( $charset ) != 'UTF8') ) {
+					if ( ( strtoupper( $charset ) != 'UTF-8' ) && ( strtoupper( $charset ) != 'UTF8' ) ) {
 						$host = encode_utf8( $host, $charset, true );
 					}
 					$host = $idn->encode( $host );
-					$url = $matches[1] . $host . $matches[3];
+					$url  = $matches[1] . $host . $matches[3];
 				}
 			}
 
@@ -405,11 +407,11 @@ if ( ! class_exists( 'blcUtility' ) ) {
 		* @return float
 		*/
 		public static function constrained_hash( $input, $min = 0, $max = 1 ) {
-			$bytes_to_use = 3;
+			$bytes_to_use   = 3;
 			$md5_char_count = 32;
-			$hash = substr( md5( $input ), $md5_char_count - $bytes_to_use * 2 );
-			$hash = intval( hexdec( $hash ) );
-			return  $min + ( ( $max - $min ) * ( $hash / ( pow( 2, $bytes_to_use * 8 ) - 1) ) );
+			$hash           = substr( md5( $input ), $md5_char_count - $bytes_to_use * 2 );
+			$hash           = intval( hexdec( $hash ) );
+			return  $min + ( ( $max - $min ) * ( $hash / ( pow( 2, $bytes_to_use * 8 ) - 1 ) ) );
 		}
 
 	}//class

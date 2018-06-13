@@ -1,25 +1,25 @@
 <?php
 
-if( !function_exists('blc_get_db_schema') ){
+if ( ! function_exists( 'blc_get_db_schema' ) ) {
 
-function blc_get_db_schema(){
-	global $wpdb;
-	
-	//Use the character set and collation that's configured for WP tables
-	$charset_collate = '';
-	if ( !empty($wpdb->charset) ){
-		//Some German installs use "utf-8" (invalid) instead of "utf8" (valid). None of 
-		//the charset ids supported by MySQL contain dashes, so we can safely strip them.
-		//See http://dev.mysql.com/doc/refman/5.0/en/charset-charsets.html 
-		$charset = str_replace('-', '', $wpdb->charset);
-		
-		$charset_collate = "DEFAULT CHARACTER SET {$charset}";
-	}
-	if ( !empty($wpdb->collate) ){
-		$charset_collate .= " COLLATE {$wpdb->collate}";
-	}
-	
-	$blc_db_schema = <<<EOM
+	function blc_get_db_schema() {
+		global $wpdb;
+
+		//Use the character set and collation that's configured for WP tables
+		$charset_collate = '';
+		if ( ! empty( $wpdb->charset ) ) {
+			//Some German installs use "utf-8" (invalid) instead of "utf8" (valid). None of
+			//the charset ids supported by MySQL contain dashes, so we can safely strip them.
+			//See http://dev.mysql.com/doc/refman/5.0/en/charset-charsets.html
+			$charset = str_replace( '-', '', $wpdb->charset );
+
+			$charset_collate = "DEFAULT CHARACTER SET {$charset}";
+		}
+		if ( ! empty( $wpdb->collate ) ) {
+			$charset_collate .= " COLLATE {$wpdb->collate}";
+		}
+
+		$blc_db_schema = <<<EOM
 	
 	CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}blc_filters` (
 		`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -89,8 +89,7 @@ function blc_get_db_schema(){
 	) {$charset_collate};
 	
 EOM;
-	
-	return $blc_db_schema;
-}
 
+		return $blc_db_schema;
+	}
 }

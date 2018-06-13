@@ -20,9 +20,9 @@ class blcTokenBucketList {
 
 	private $buckets = array();
 
-	public function __construct($capacity, $fillTime, $minInterval = 0) {
-		$this->capacity = $capacity;
-		$this->fillTime = $fillTime;
+	public function __construct( $capacity, $fillTime, $minInterval = 0 ) {
+		$this->capacity        = $capacity;
+		$this->fillTime        = $fillTime;
 		$this->minTakeInterval = $minInterval;
 	}
 
@@ -32,12 +32,12 @@ class blcTokenBucketList {
 	 *
 	 * @param string $bucketName
 	 */
-	public function takeToken($bucketName) {
-		$this->createIfNotExists($bucketName);
-		$this->waitForToken($bucketName);
+	public function takeToken( $bucketName ) {
+		$this->createIfNotExists( $bucketName );
+		$this->waitForToken( $bucketName );
 
-		$this->buckets[$bucketName]['tokens']--;
-		$this->buckets[$bucketName]['lastTokenTakenAt'] = microtime(true);
+		$this->buckets[ $bucketName ]['tokens']--;
+		$this->buckets[ $bucketName ]['lastTokenTakenAt'] = microtime( true );
 	}
 
 	/**
@@ -45,21 +45,21 @@ class blcTokenBucketList {
 	 *
 	 * @param string $name Bucket name.
 	 */
-	private function waitForToken($name) {
-		$now = microtime(true);
+	private function waitForToken( $name ) {
+		$now = microtime( true );
 
-		$timeSinceLastToken = $now - $this->buckets[$name]['lastTokenTakenAt'];
-		$intervalWait = max($this->minTakeInterval - $timeSinceLastToken, 0);
+		$timeSinceLastToken = $now - $this->buckets[ $name ]['lastTokenTakenAt'];
+		$intervalWait       = max( $this->minTakeInterval - $timeSinceLastToken, 0 );
 
-		$requiredTokens = max(1 - $this->buckets[$name]['tokens'], 0);
-		$refillWait = $requiredTokens / $this->getFillRate();
+		$requiredTokens = max( 1 - $this->buckets[ $name ]['tokens'], 0 );
+		$refillWait     = $requiredTokens / $this->getFillRate();
 
-		$totalWait = max($intervalWait, $refillWait);
-		if ($totalWait > 0) {
-			usleep($totalWait  * self::MICROSECONDS_PER_SECOND);
+		$totalWait = max( $intervalWait, $refillWait );
+		if ( $totalWait > 0 ) {
+			usleep( $totalWait * self::MICROSECONDS_PER_SECOND );
 		}
 
-		$this->refillBucket($name);
+		$this->refillBucket( $name );
 		return;
 	}
 
@@ -68,12 +68,12 @@ class blcTokenBucketList {
 	 *
 	 * @param $name
 	 */
-	private function createIfNotExists($name) {
-		if ( !isset($this->buckets[$name]) ) {
-			$this->buckets[$name] = array(
-				'tokens' => $this->capacity,
-				'lastRefill' => microtime(true),
-				'lastTokenTakenAt' => 0
+	private function createIfNotExists( $name ) {
+		if ( ! isset( $this->buckets[ $name ] ) ) {
+			$this->buckets[ $name ] = array(
+				'tokens'           => $this->capacity,
+				'lastRefill'       => microtime( true ),
+				'lastTokenTakenAt' => 0,
 			);
 		}
 		//Make sure we don't exceed $maxBuckets.
@@ -94,27 +94,27 @@ class blcTokenBucketList {
 	 *
 	 * @param $name
 	 */
-	private function refillBucket($name) {
-		$now = microtime(true);
+	private function refillBucket( $name ) {
+		$now = microtime( true );
 
-		$timeSinceRefill = $now - $this->buckets[$name]['lastRefill'];
-		$this->buckets[$name]['tokens'] += $timeSinceRefill * $this->getFillRate();
+		$timeSinceRefill                   = $now - $this->buckets[ $name ]['lastRefill'];
+		$this->buckets[ $name ]['tokens'] += $timeSinceRefill * $this->getFillRate();
 
-		if ($this->buckets[$name]['tokens'] > $this->capacity) {
-			$this->buckets[$name]['tokens'] = $this->capacity;
+		if ( $this->buckets[ $name ]['tokens'] > $this->capacity ) {
+			$this->buckets[ $name ]['tokens'] = $this->capacity;
 		}
 
-		$this->buckets[$name]['lastRefill'] = $now;
+		$this->buckets[ $name ]['lastRefill'] = $now;
 	}
 
 	/**
 	 * Keep the number of active buckets within the $this->maxBuckets limit.
 	 */
 	private function cleanup() {
-		if ($this->maxBuckets > 0) {
+		if ( $this->maxBuckets > 0 ) {
 			//Very simplistic implementation - just discard the oldest buckets.
-			while(count($this->buckets) > $this->maxBuckets) {
-				array_shift($this->buckets);
+			while ( count( $this->buckets ) > $this->maxBuckets ) {
+				array_shift( $this->buckets );
 			}
 		}
 	}

@@ -1,41 +1,38 @@
 <?php
 
-class TransactionManager
-{
-    private $isTransactionStarted = false;
-    private static $instance;
+class TransactionManager {
 
-    public function start()
-    {
-        global $wpdb;
+	private $isTransactionStarted = false;
+	private static $instance;
 
-        if (!$this->isTransactionStarted) {
-            $wpdb->query('BEGIN');
-            $this->isTransactionStarted = true;
-        }
-    }
+	public function start() {
+		global $wpdb;
 
-    public function commit()
-    {
-        global $wpdb;
+		if ( ! $this->isTransactionStarted ) {
+			$wpdb->query( 'BEGIN' );
+			$this->isTransactionStarted = true;
+		}
+	}
 
-        $this->start();
+	public function commit() {
+		global $wpdb;
 
-        try {
-            $wpdb->query('COMMIT');
-            $this->isTransactionStarted = false;
-        } catch (Exception $e) {
-            $wpdb->query('ROLLBACK');
-            $this->isTransactionStarted = false;
-        }
-    }
+		$this->start();
 
-    static public function getInstance()
-    {
-        if (!self::$instance) {
-            self::$instance = new TransactionManager();
-        }
+		try {
+			$wpdb->query( 'COMMIT' );
+			$this->isTransactionStarted = false;
+		} catch ( Exception $e ) {
+			$wpdb->query( 'ROLLBACK' );
+			$this->isTransactionStarted = false;
+		}
+	}
 
-        return self::$instance;
-    }
+	static public function getInstance() {
+		if ( ! self::$instance ) {
+			self::$instance = new TransactionManager();
+		}
+
+		return self::$instance;
+	}
 }

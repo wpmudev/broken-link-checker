@@ -9,13 +9,13 @@ Text Domain: broken-link-checker
 */
 
 //Path to this file
-if ( !defined('BLC_PLUGIN_FILE') ){
-	define('BLC_PLUGIN_FILE', __FILE__);
+if ( ! defined( 'BLC_PLUGIN_FILE' ) ) {
+	define( 'BLC_PLUGIN_FILE', __FILE__ );
 }
 
 //Path to the plugin's directory
-if ( !defined('BLC_DIRECTORY') ){
-	define('BLC_DIRECTORY', dirname(__FILE__));
+if ( ! defined( 'BLC_DIRECTORY' ) ) {
+	define( 'BLC_DIRECTORY', dirname( __FILE__ ) );
 }
 
 //Load the actual plugin
