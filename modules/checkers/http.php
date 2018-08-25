@@ -145,10 +145,10 @@ class blcHttpCheckerBase extends blcChecker {
 		return preg_replace_callback(
 			'|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i', 
 			function ($str) {
-                return rawurlencode($str[0]);
-            },
+				return rawurlencode($str[0]);
+			},
 			$url
-		 );
+		);
 	}
 	
 }
