@@ -1,0 +1,6 @@
+{
+  "name": "ManageWP/broken-link-checker",
+  "description": "Broken Link Checker",
+  "type": "wordpress-plugin",
+  "require": {}
+}
