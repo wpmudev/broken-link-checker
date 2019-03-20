@@ -144,9 +144,11 @@ class blcHttpCheckerBase extends blcChecker {
 		//TODO: Remove/fix this. Probably not a good idea to "fix" invalid URLs like that.
 		return preg_replace_callback(
 			'|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-			function ($str) { return rawurlencode( $str[0] ); },
+			function ($str) {
+				return rawurlencode($str[0]);
+			},
 			$url
-		 );
+		);
 	}
 
 }
@@ -180,8 +182,8 @@ class blcCurlHttp extends blcHttpCheckerBase {
         curl_setopt($ch, CURLOPT_URL, $this->urlencodefix($url));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        //Masquerade as Internet Explorer
-	$ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
+        //Masquerade as a recent version of Chrome
+		$ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36';
         curl_setopt($ch, CURLOPT_USERAGENT, $ua);
 
 		//Close the connection after the request (disables keep-alive). The plugin rate-limits requests,
@@ -332,9 +334,9 @@ class blcCurlHttp extends blcHttpCheckerBase {
 			isset($result['status_text']) ? $result['status_text'] : 'N/A'
 		));
 
-        if ( $nobody && $result['broken'] ){
+        if ( $nobody && $result['broken'] && !$result['timeout'] && !$use_get){
 			//The site in question might be expecting GET instead of HEAD, so lets retry the request
-			//using the GET verb.
+			//using the GET verb...but not in cases of timeout, or where we've already done it.
 			return $this->check($url, true);
 
 			//Note : normally a server that doesn't allow HEAD requests on a specific resource *should*
