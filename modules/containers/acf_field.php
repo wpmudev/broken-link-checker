@@ -654,7 +654,7 @@ class blcAcfMetaManager extends blcContainerManager {
         $selected_fields = array_keys($selected_fields);
 
         $meta   = get_metadata( 'post', $post_id );
-        $fields = [];
+        $fields = array();
 
         foreach ( $meta as $field => $value ) {
 
