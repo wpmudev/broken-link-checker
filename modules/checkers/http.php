@@ -332,7 +332,7 @@ class blcCurlHttp extends blcHttpCheckerBase {
 			isset($result['status_text']) ? $result['status_text'] : 'N/A'
 		));
 
-        if ( $nobody && $result['broken'] && !$result['timeout'] && !$use_get){
+        if ( $nobody && !$result['timeout'] && !$use_get && ($result['broken'] || $result['redirect_count'] == 1)){
 			//The site in question might be expecting GET instead of HEAD, so lets retry the request
 			//using the GET verb...but not in cases of timeout, or where we've already done it.
 			return $this->check($url, true);
