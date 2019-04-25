@@ -18,14 +18,18 @@ class TransactionManager
     public function commit()
     {
         global $wpdb;
+		global $blclog;
+		$blclog->debug('Starting DB commit.');
 
         $this->start();
 
         try {
             $wpdb->query('COMMIT');
+			$blclog->debug('Commit executed.');
             $this->isTransactionStarted = false;
         } catch (Exception $e) {
             $wpdb->query('ROLLBACK');
+			$blclog->debug('Commit failed; rollback.');
             $this->isTransactionStarted = false;
         }
     }

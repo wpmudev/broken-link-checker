@@ -73,6 +73,7 @@ class wsBrokenLinkChecker {
 	    add_action( 'wp_ajax_blc_undismiss', array($this, 'ajax_undismiss') );
 
         //Add/remove Cron events
+        add_filter( 'cron_schedules', array( $this, 'cron_add_every_10_minutes' ) );
         $this->setup_cron_events();
 
         //Set hooks that listen for our Cron actions
@@ -95,7 +96,6 @@ class wsBrokenLinkChecker {
 		//Display an explanatory note on the "Tools -> Broken Links -> Warnings" page.
 		add_action( 'admin_notices', array( $this, 'show_warnings_section_notice' ) );
 
-        add_filter('cron_schedules', array( $this, 'cron_add_every_10_minutes'));
 
     }
 
@@ -2119,6 +2119,8 @@ class wsBrokenLinkChecker {
 		$processed_links = 0;
 
 		if ( count($selected_links) > 0 ){
+            $transactionManager = TransactionManager::getInstance();
+            $transactionManager->start();
 			foreach($selected_links as $link_id){
 				//Load the link
 				$link = new blcLink( intval($link_id) );
@@ -2155,6 +2157,7 @@ class wsBrokenLinkChecker {
 		}
 
 		if ( $processed_links > 0 ){
+            $transactionManager->commit();
 			$messages[] = sprintf(
 				_n(
 					'%d link marked as not broken',
@@ -2183,6 +2186,8 @@ class wsBrokenLinkChecker {
 		$processed_links = 0;
 
 		if ( count($selected_links) > 0 ){
+            $transactionManager = TransactionManager::getInstance();
+            $transactionManager->start();
 			foreach($selected_links as $link_id){
 				//Load the link
 				$link = new blcLink( intval($link_id) );
@@ -2214,6 +2219,7 @@ class wsBrokenLinkChecker {
 		}
 
 		if ( $processed_links > 0 ){
+            $transactionManager->commit();
 			$messages[] = sprintf(
 				_n(
 					'%d link dismissed',
@@ -2628,6 +2634,7 @@ class wsBrokenLinkChecker {
 
 				//Check if we still have some execution time left
 				if( $this->execution_time() > $max_execution_time ){
+                    $transactionManager->commit();
 					//FB::log('The allotted execution time has run out');
 					$blclog->info('The allotted execution time has run out.');
 					$this->release_lock();
@@ -2636,6 +2643,7 @@ class wsBrokenLinkChecker {
 
 				//Check if the server isn't overloaded
 				if ( $this->server_too_busy() ){
+                    $transactionManager->commit();
 					//FB::log('Server overloaded, bailing out.');
 					$blclog->info('Server load too high, stopping.');
 					$this->release_lock();
@@ -2961,8 +2969,13 @@ class wsBrokenLinkChecker {
 			$link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
 
 			$link->isOptionLinkChanged = true;
+
+            $transactionManager = TransactionManager::getInstance();
+            $transactionManager->start();
+
 			//Save the changes
 			if ( $link->save() ){
+                $transactionManager->commit();
 				die( "OK" );
 			} else {
 				die( __("Oops, couldn't modify the link!", 'broken-link-checker') ) ;
@@ -3000,7 +3013,10 @@ class wsBrokenLinkChecker {
 
 			//Save the changes
 			$link->isOptionLinkChanged = true;
+            $transactionManager = TransactionManager::getInstance();
+            $transactionManager->start();
 			if ( $link->save() ){
+                $transactionManager->commit();
 				die( "OK" );
 			} else {
 				die( __("Oops, couldn't modify the link!", 'broken-link-checker') ) ;
@@ -3244,13 +3260,18 @@ class wsBrokenLinkChecker {
 			)));
 		}
 
-		//In case the immediate check fails, this will ensure the link is checked during the next work() run.
+        $transactionManager = TransactionManager::getInstance();
+        $transactionManager->start();
+
+        //In case the immediate check fails, this will ensure the link is checked during the next work() run.
 		$link->last_check_attempt = 0;
 		$link->isOptionLinkChanged = true;
 		$link->save();
 
 		//Check the link and save the results.
 		$link->check(true);
+
+        $transactionManager->commit();
 
 		$status = $link->analyse_status();
 		$response = array(
