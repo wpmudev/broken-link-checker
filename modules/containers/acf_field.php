@@ -434,7 +434,7 @@ class blcAcfMetaManager extends blcContainerManager {
         }
 
         //Intercept 2.9+ style metadata modification actions
-        add_action("acf/save_post", array($this, 'acf_save'), 10, 4);
+        add_action("acf/save_post", array($this, 'acf_save'), 20, 1);
 
         //When a post is deleted, also delete the custom field container associated with it.
         add_action('delete_post', array($this, 'post_deleted'));
@@ -653,18 +653,41 @@ class blcAcfMetaManager extends blcContainerManager {
         $html_fields = array_keys($html_fields);
         $selected_fields = array_keys($selected_fields);
 
-        $keys = array();
-        $fields = $_POST['acf'];
+        $meta   = get_metadata( 'post', $post_id );
+        $fields = array();
 
-        $acfWalk = new blcAcfExtractedFieldWalker($keys, $selected_fields, $url_fields, $html_fields);
+        foreach ( $meta as $field => $value ) {
 
-        array_walk_recursive($fields, array($acfWalk, 'walk_function'));
+            $value = explode( '|', str_replace( '_field', '|field', $value[0] ) );
 
-        if (empty($keys)) {
+            if ( ! is_array( $value ) ) {
+                continue;
+            } else {
+
+                $value = $value[ count( $value ) - 1 ];
+
+                if ( in_array( $value, $url_fields ) ) {
+                    $field = ltrim( $field, '_' );
+                    if ( ! filter_var( $meta[ $field ][0], FILTER_VALIDATE_URL ) === false ) {
+                        $fields[ $field ] = 'acf_field';
+                    }
+                }
+
+                if ( in_array( $value, $html_fields ) ) {
+                    $field = ltrim( $field, '_' );
+                    if ( $meta[ $field ][0] != '' ) {
+                        $fields[ $field ] = 'html';
+                    }
+                }
+
+            }
+        }
+
+        if (empty( $fields )) {
             return;
         }
 
-        $container = blcContainerHelper::get_container(array($this->container_type, $post_id));
+        $container = blcContainerHelper::get_container(array($this->container_type, intval($post_id)));
         $container->mark_as_unsynched();
 
     }

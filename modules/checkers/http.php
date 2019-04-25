@@ -182,9 +182,8 @@ class blcCurlHttp extends blcHttpCheckerBase {
         curl_setopt($ch, CURLOPT_URL, $this->urlencodefix($url));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         
-        //Masquerade as Internet Explorer
-		$ua = 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)';
-		//$ua = 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko';
+        //Masquerade as a recent version of Chrome
+		$ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36';
         curl_setopt($ch, CURLOPT_USERAGENT, $ua);
 
 		//Close the connection after the request (disables keep-alive). The plugin rate-limits requests,
@@ -335,9 +334,9 @@ class blcCurlHttp extends blcHttpCheckerBase {
 			isset($result['status_text']) ? $result['status_text'] : 'N/A'
 		));
         
-        if ( $nobody && $result['broken'] ){
+        if ( $nobody && $result['broken'] && !$result['timeout'] && !$use_get){
 			//The site in question might be expecting GET instead of HEAD, so lets retry the request 
-			//using the GET verb.
+			//using the GET verb...but not in cases of timeout, or where we've already done it.
 			return $this->check($url, true);
 			 
 			//Note : normally a server that doesn't allow HEAD requests on a specific resource *should*

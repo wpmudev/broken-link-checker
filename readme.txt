@@ -1,10 +1,10 @@
 === Broken Link Checker ===
-Contributors: freediver
+Contributors: managewp
 Donate link:
 Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, posts
 Requires at least: 3.2
-Tested up to: 4.8
-Stable tag: 1.11.5
+Tested up to: 5.1
+Stable tag: 1.11.8
 
 This plugin will check your posts, comments and other content for broken links and missing images, and notify you if any are found.
 
@@ -39,41 +39,6 @@ There are several actions associated with each link. They show up when you move 
 
 You can also click on the contents of the "Status" or "Link Text" columns to get more info about the status of each link.
 
-**Translations**
-
-* Arabic - Yaser Maadan
-* Belorussian - [M. Comfi](http://www.comfi.com/)
-* Chinese Simplified - Kaijia Feng
-* Chinese Traditional - [YILIN](http://sh2153.com)
-* Czech - [Lelkoun](http://lelkoun.cz/)
-* Danish - [Georg S. Adamsen](http://wordpress.blogos.dk/)
-* Dutch - [Robin Roelofsen](http://www.dreamdesignsolutions.nl/)
-* Finnish - [Jani Alha](http://www.wysiwyg.fi)
-* French - [Whiler](http://blogs.wittwer.fr/whiler/), Luc Capronnier, [Guillaume Boda](http://www.michtoblog.com/)
-* German - [Ivan Graf](http://blog.bildergallery.com/)
-* Hebrew - [Ahrale](http://atar4u.com/), [Eitan Caspi](http://caspi.org.il/)
-* Hindi - [Outshine Solutions](http://outshinesolutions.com/)
-* Hungarian - [Language Connect](http://www.languageconnect.net/)
-* Irish - [Ray Gren](http://letsbefamous.com/)
-* Italian - [Gianni Diurno](http://gidibao.net/index.php/portfolio/) and [Giacomo Ross](http://www.luxemozione.com/) (alternative)
-* Japanese - [Shohei Tanak](http://artisanworkshop.biz/)
-* Korean - [MinHyeong Lim](http://ssamture.net/)
-* Persian - [Omid Sheerkavand](http://qanal.ir/)
-* Polish - [http://positionmaker.pl](http://positionmaker.pl/)
-* Portuguese - [mowster](http://wordpress.mowster.net/)
-* Brazilian Portuguese - [Paulino Michelazzo](http://www.michelazzo.com.br/)
-* Romanian - [Ovidiu](http://www.jibo.ro)
-* Russian - [Anna Ozeritskaya](http://hweia.ru/)
-* Serbo-Croatian - [Borisa Djuraskovic](http://www.webhostinghub.com)
-* Slovakian - [Patrik Žec](http://patwist.com/)
-* Spanish - [Neoshinji](http://blog.tuayudainformatica.com/traducciones-de-plugins-wordpress/)
-* Swedish - mepmepmep
-* Turkish - [Murat Durgun](http://www.lanwifi.net/)
-* Ukrainian - [Stas Mykhajlyuk](http://www.kosivart.com/)
-* Vietnamese - [Biz.O](http://bizover.net/)
-
-*Note: Some translations are not entirely up to date with the latest release, so parts of the interface may appear untranslated.*
-
 **Other Credits**
 
 This plugin uses some icons from the [Font Awesome icon font](http://fortawesome.github.io/Font-Awesome/). Font Awesome is licensed under SIL OFL 1.1.
@@ -100,6 +65,12 @@ To upgrade your installation
 1. Reactivate the plugin. Your settings will be retained from the previous version.
 
 == Changelog ==
+
+= 1.11.7 =
+* Fixed a PHP 7.2 compatibility issue
+
+= 1.11.6 =
+* Fixed link check not saving
 
 = 1.11.5 =
 * Fixed a PHP 5.2 compatibility issue
