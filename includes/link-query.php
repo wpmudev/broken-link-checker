@@ -244,7 +244,7 @@ class blcLinkQuery {
 		$url_params = array();
 		foreach ($_GET as $param => $value){
 			if ( in_array($param, $this->valid_url_params) ){
-				$url_params[$param] = $value;
+				$url_params[$param] = esc_url($value);
 			}
 		}
 		return $url_params;
@@ -806,7 +806,7 @@ class blcLinkQuery {
 		} else if ( isset($current_filter['params']['s_filter']) && !empty($current_filter['params']['s_filter']) ) {
 			$base_filter = $current_filter['params']['s_filter'];
 		} else if ( isset($_GET['s_filter']) && !empty($_GET['s_filter']) ) {
-			$base_filter = $_GET['s_filter'];
+			$base_filter = esc_url($_GET['s_filter']);
 		}
 
 		$is_broken_filter = ($base_filter == 'broken');
