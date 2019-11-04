@@ -144,10 +144,14 @@ class blcHttpCheckerBase extends blcChecker {
 		//TODO: Remove/fix this. Probably not a good idea to "fix" invalid URLs like that.
 		return preg_replace_callback(
 			'|[^a-z0-9\+\-\/\\#:.,;=?!&%@()$\|*~_]|i',
-            create_function('$str','return rawurlencode($str[0]);'),
+            'urlencodefix_replace_callback',
 			$url
 		);
 	}
+
+    function urlencodefix_replace_callback($str){
+        return rawurlencode($str[0]);
+    }
 
 }
 

@@ -953,8 +953,12 @@ class wsBrokenLinkChecker {
         <th scope="row"><?php _e('Look for links in', 'broken-link-checker'); ?></th>
         <td>
     	<?php
+        function modules_uasort_callback($a, $b){
+            return strcasecmp($a["Name"], $b["Name"]);
+        }
+
     	if ( !empty($modules['container']) ){
-    		uasort($modules['container'], create_function('$a, $b', 'return strcasecmp($a["Name"], $b["Name"]);'));
+    		uasort($modules['container'], 'modules_uasort_callback');
     		$this->print_module_list($modules['container'], $this->conf->options);
     	}
     	?>
