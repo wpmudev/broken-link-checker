@@ -75,7 +75,7 @@ if ( ! class_exists( 'blcTablePrinter' ) ) {
 			if ( $this->core->conf->options['table_color_code_status'] ) {
 				$table_classes[] = 'color-code-link-status';
 			};
-			$table_classes[] = 'base-filter-' . $current_filter['base_filter'];
+			$table_classes[] = 'base-filter-' . esc_html( $current_filter['base_filter'] );
 			printf(
 				'<table class="%s" id="blc-links"><thead><tr>',
 				implode( ' ', $table_classes )
