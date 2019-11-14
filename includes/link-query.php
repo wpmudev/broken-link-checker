@@ -806,7 +806,11 @@ class blcLinkQuery {
 		} else if ( isset($current_filter['params']['s_filter']) && !empty($current_filter['params']['s_filter']) ) {
 			$base_filter = $current_filter['params']['s_filter'];
 		} else if ( isset($_GET['s_filter']) && !empty($_GET['s_filter']) ) {
-			$base_filter = $_GET['s_filter'];
+			if ( array_key_exists( $_GET['s_filter'], $this->native_filters ) ) {
+				$base_filter = esc_html( $_GET['s_filter'] );
+			} else {
+				$base_filter = 'all';
+			}
 		}
 
 		$is_broken_filter = ($base_filter == 'broken');
