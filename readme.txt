@@ -1,10 +1,10 @@
 === Broken Link Checker ===
-Contributors: managewp
+Contributors: managewp, wpmudev
 Donate link:
 Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, posts
 Requires at least: 3.2
-Tested up to: 5.1
-Stable tag: 1.11.8
+Tested up to: 5.2.4
+Stable tag: 1.11.9
 
 This plugin will check your posts, comments and other content for broken links and missing images, and notify you if any are found.
 
@@ -45,7 +45,7 @@ This plugin uses some icons from the [Font Awesome icon font](http://fortawesome
 
 **Contribute**
 
-Broken Link Checker is now on [GitHub](https://github.com/ManageWP/broken-link-checker). Pull Requests welcome.
+Broken Link Checker is now on [GitHub](https://github.com/wpmudev/broken-link-checker). Pull Requests welcome.
 
 == Installation ==
 
@@ -65,6 +65,13 @@ To upgrade your installation
 1. Reactivate the plugin. Your settings will be retained from the previous version.
 
 == Changelog ==
+
+= 1.11.9 =
+* Fixed Reflected XSS (Thanks to [Tobias Fink](https://github.com/sbaresearch/advisories/tree/public/2019/SBA-ADV-20190913-02_WordPress_Plugin_Broken_Link_Checker) for the report)
+* Fixed param escaping to avoid possible XSS attack.
+
+= 1.11.8 =
+* Various fixes.
 
 = 1.11.7 =
 * Fixed a PHP 7.2 compatibility issue
@@ -86,11 +93,11 @@ To upgrade your installation
 
 = 1.11.1 =
 * Major performance improvement. Database queries reduced up to 10x in some cases.
-* Feel free to contribute to the plugin on [GitHub](https://github.com/ManageWP/broken-link-checker). Pull requests welcome!
+* Feel free to contribute to the plugin on [GitHub](https://github.com/wpmudev/broken-link-checker). Pull requests welcome!
 
 = 1.10.11 =
 * Fixed the issue with HTTPS (Thanks to [gmcinnes](https://wordpress.org/support/profile/gmcinnes))
-* Broken Link Checker is now on [GitHub](https://github.com/ManageWP/broken-link-checker). Pull Requests welcome.
+* Broken Link Checker is now on [GitHub](https://github.com/wpmudev/broken-link-checker). Pull Requests welcome.
 
 = 1.10.10 =
 * New plugin image that was long overdue.

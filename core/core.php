@@ -1765,8 +1765,8 @@ class wsBrokenLinkChecker {
 			$post = stripslashes_deep($post); //Ceterum censeo, WP shouldn't mangle superglobals.
 		}
 
-		$search = isset($post['search']) ? $post['search'] : '';
-		$replace = isset($post['replace']) ? $post['replace'] : '';
+		$search = isset($post['search']) ? esc_attr( $post['search'] ) : '';
+		$replace = isset($post['replace']) ? esc_attr( $post['replace'] ) : '';
 		$use_regex = !empty($post['regex']);
 		$case_sensitive = !empty($post['case_sensitive']);
 
