@@ -954,7 +954,12 @@ class wsBrokenLinkChecker {
         <td>
     	<?php
     	if ( !empty($modules['container']) ){
-    		uasort($modules['container'], create_function('$a, $b', 'return strcasecmp($a["Name"], $b["Name"]);'));
+    		uasort(
+				$modules['container'],
+				function( $a, $b ) {
+					return strcasecmp( $a["Name"], $b["Name"] );
+				}
+			);
     		$this->print_module_list($modules['container'], $this->conf->options);
     	}
     	?>
