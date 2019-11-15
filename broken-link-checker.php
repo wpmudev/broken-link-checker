@@ -1,12 +1,30 @@
 <?php
+
 /*
-Plugin Name: Broken Link Checker
-Plugin URI: https://wordpress.org/plugins/broken-link-checker/
-Description: Checks your blog for broken links and missing images and notifies you on the dashboard if any are found.
-Version: 1.11.9
-Author: ManageWP
-Author URI: https://managewp.com
-Text Domain: broken-link-checker
+ * Plugin Name: Broken Link Checker
+ * Plugin URI:  https://wordpress.org/plugins/broken-link-checker/
+ * Description: Checks your blog for broken links and missing images and notifies you on the dashboard if any are found.
+ * Version:     1.11.9
+ * Author:      ManageWP
+ * Author URI:  https://managewp.com
+ * Text Domain: broken-link-checker
+ * License:     GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+*/
+
+/*
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License (Version 2 – GPLv2) as published by
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
 //Path to this file
