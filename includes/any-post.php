@@ -135,7 +135,7 @@ class blcPostTypeOverlord {
 
 			// Firstly: See if we have any current instances
 			$q_current_instance_ids = $wpdb->prepare( 
-				'SELECT instance_id FROM `'.$wpdb->prefix.'_blc_instances` WHERE container_id = %d AND container_type = %s', 
+				'SELECT instance_id FROM `'.$wpdb->prefix.'blc_instances` WHERE container_id = %d AND container_type = %s', 
 				$post_id,
 				$post_type );
 
@@ -149,14 +149,14 @@ class blcPostTypeOverlord {
 			$current_instance_ids = wp_list_pluck( $current_instance_ids_results, 'instance_id' );
 
 			// Secondly: Get all link_ids used in our current instances
-			$q_current_link_ids = 'SELECT DISTINCT link_id FROM `'.$wpdb->prefix.'_blc_instances` WHERE instance_id IN (\''.implode("', '", $current_instance_ids).'\')';
+			$q_current_link_ids = 'SELECT DISTINCT link_id FROM `'.$wpdb->prefix.'blc_instances` WHERE instance_id IN (\''.implode("', '", $current_instance_ids).'\')';
 
 			$q_current_link_ids_results = $wpdb->get_results( $q_current_link_ids, ARRAY_A );
 
 			$current_link_ids = wp_list_pluck( $q_current_link_ids_results, 'link_id' );
 
 			// Go ahead and remove blc_instances for this container, blc_cleanup_links( $current_link_ids ) will find and remove any dangling links in the blc_links table
-			$wpdb->query( 'DELETE FROM `'.$wpdb->prefix.'_blc_instances` WHERE instance_id IN (\''.implode("', '", $current_instance_ids).'\')' );
+			$wpdb->query( 'DELETE FROM `'.$wpdb->prefix.'blc_instances` WHERE instance_id IN (\''.implode("', '", $current_instance_ids).'\')' );
 
 			//Clean up any dangling links
 			blc_cleanup_links( $current_link_ids );
