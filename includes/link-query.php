@@ -244,7 +244,7 @@ class blcLinkQuery {
 		$url_params = array();
 		foreach ($_GET as $param => $value){
 			if ( in_array($param, $this->valid_url_params) ){
-				$url_params[$param] = $value;
+				$url_params[ $param ] = esc_html( $value );
 			}
 		}
 		return $url_params;
