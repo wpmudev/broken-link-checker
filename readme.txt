@@ -71,6 +71,7 @@ To upgrade your installation
 = 1.11.10 =
 * Fixed create_function deprecated notices.
 * Fixed missing license information.
+* Add escaping to search params.
 * Tested up to WordPress 5.3
 
 = 1.11.9 =
