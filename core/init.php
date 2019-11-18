@@ -243,13 +243,23 @@ function blc_cleanup_database(){
 ************************************************/
 
 /**
- * Add a weekly Cron schedule for email notifications
- * and a bimonthly schedule for database maintenance.
+ * Adds the following cron schedules:
+ * - 10min: every 10 minutes.
+ * - weekly: once per week.
+ * - bimonthly : twice per month.
  *
  * @param array $schedules Existing Cron schedules.
  * @return array
  */
 function blc_cron_schedules($schedules){
+
+	if ( ! isset( $schedules['10min'] ) ) {
+		$schedules['10min'] = array(
+			'interval' => 600,
+			'display'  => __( 'Every 10 minutes' ),
+		);
+	}
+
 	if ( !isset($schedules['weekly']) ){
 		$schedules['weekly'] = array(
 	 		'interval' => 604800, //7 days
