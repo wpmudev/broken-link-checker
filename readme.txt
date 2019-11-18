@@ -3,8 +3,8 @@ Contributors: managewp, wpmudev
 Donate link:
 Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, posts
 Requires at least: 3.2
-Tested up to: 5.2.4
-Stable tag: 1.11.9
+Tested up to: 5.3
+Stable tag: 1.11.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ To upgrade your installation
 1. Reactivate the plugin. Your settings will be retained from the previous version.
 
 == Changelog ==
+
+= 1.11.10 =
+* Fixed create_function deprecated notices.
+* Fixed missing license information.
+* Tested up to WordPress 5.3
 
 = 1.11.9 =
 * Fixed Reflected XSS (Thanks to [Tobias Fink](https://github.com/sbaresearch/advisories/tree/public/2019/SBA-ADV-20190913-02_WordPress_Plugin_Broken_Link_Checker) for the report)
