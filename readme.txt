@@ -5,6 +5,8 @@ Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, post
 Requires at least: 3.2
 Tested up to: 5.2.4
 Stable tag: 1.11.9
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin will check your posts, comments and other content for broken links and missing images, and notify you if any are found.
 
