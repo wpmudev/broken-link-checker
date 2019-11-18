@@ -48,7 +48,7 @@ class blcACFParser extends blcParser {
 			if ( ! $parts ) {
 				//Ignore invalid URLs
 				return $instances;
-			};
+			}
 
 			if ( ! isset( $parts['scheme'] ) ) {
 				//No scheme - likely a relative URL. Turn it into an absolute one.
