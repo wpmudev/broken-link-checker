@@ -1,17 +1,16 @@
 <?php
-/*
-Plugin Name: ACF
-Description: Parses acf fields (AKA custom fields)
-Version: 1.0
-Author: Janne Aalto
-
-ModuleID: acf
-ModuleCategory: parser
-ModuleClassName: blcACFParser
-ModuleContext: on-demand
-ModuleLazyInit: true
-ModuleAlwaysActive: true
-ModuleHidden: true
+/**
+ * Plugin Name: ACF
+ * Description: Parses acf fields (AKA custom fields)
+ * Version: 1.0
+ * Author: Janne Aalto
+ * ModuleID: acf
+ * ModuleCategory: parser
+ * ModuleClassName: blcACFParser
+ * ModuleContext: on-demand
+ * ModuleLazyInit: true
+ * ModuleAlwaysActive: true
+ * ModuleHidden: true
 */
 
 class blcACFParser extends blcParser {
