@@ -73,7 +73,6 @@ class wsBrokenLinkChecker {
 	    add_action( 'wp_ajax_blc_undismiss', array($this, 'ajax_undismiss') );
 
         //Add/remove Cron events
-        add_filter( 'cron_schedules', array( $this, 'cron_add_every_10_minutes' ) );
         $this->setup_cron_events();
 
         //Set hooks that listen for our Cron actions
@@ -97,21 +96,6 @@ class wsBrokenLinkChecker {
 		add_action( 'admin_notices', array( $this, 'show_warnings_section_notice' ) );
 
 
-    }
-
-    /**
-     * @param $schedules
-     *
-     * @return mixed
-     */
-    function cron_add_every_10_minutes( $schedules ) {
-        // Adds once weekly to the existing schedules.
-        $schedules['10min'] = array(
-            'interval' => 600,
-            'display' => __('Every 10 minutes')
-        );
-
-        return $schedules;
     }
 
   /**

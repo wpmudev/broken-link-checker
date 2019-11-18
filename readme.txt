@@ -72,6 +72,7 @@ To upgrade your installation
 * Fixed create_function deprecated notices.
 * Fixed missing license information.
 * Fixed table prefix on delete post action (Thanks to [Guillaume Boudreau](https://github.com/gboudreau))
+* Merges cron schedules into 1 hook (Thanks to [Der Mundschenk & Compagnie](https://github.com/mundschenk-at))
 * Add escaping to search params.
 * Tested up to WordPress 5.3
 
