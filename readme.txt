@@ -71,6 +71,7 @@ To upgrade your installation
 = 1.11.10 =
 * Fixed create_function deprecated notices.
 * Fixed missing license information.
+* Fixed table prefix on delete post action (Thanks to [Guillaume Boudreau](https://github.com/gboudreau))
 * Add escaping to search params.
 * Tested up to WordPress 5.3
 
