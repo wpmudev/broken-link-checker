@@ -1,45 +1,42 @@
 <?php
 
-class TransactionManager
-{
-    private $isTransactionStarted = false;
-    private static $instance;
+class TransactionManager {
+	private $isTransactionStarted = false;
 
-    public function start()
-    {
-        global $wpdb;
+	private static $instance;
 
-        if (!$this->isTransactionStarted) {
-            $wpdb->query('BEGIN');
-            $this->isTransactionStarted = true;
-        }
-    }
+	public function start() {
+		global $wpdb;
 
-    public function commit()
-    {
-        global $wpdb;
+		if ( ! $this->isTransactionStarted ) {
+			$wpdb->query( 'BEGIN' );
+			$this->isTransactionStarted = true;
+		}
+	}
+
+	public function commit() {
+		global $wpdb;
 		global $blclog;
-		$blclog->debug('Starting DB commit.');
+		$blclog->debug( 'Starting DB commit.' );
 
-        $this->start();
+		$this->start();
 
-        try {
-            $wpdb->query('COMMIT');
-			$blclog->debug('Commit executed.');
-            $this->isTransactionStarted = false;
-        } catch (Exception $e) {
-            $wpdb->query('ROLLBACK');
-			$blclog->debug('Commit failed; rollback.');
-            $this->isTransactionStarted = false;
-        }
-    }
+		try {
+			$wpdb->query( 'COMMIT' );
+			$blclog->debug( 'Commit executed.' );
+			$this->isTransactionStarted = false;
+		} catch ( Exception $e ) {
+			$wpdb->query( 'ROLLBACK' );
+			$blclog->debug( 'Commit failed; rollback.' );
+			$this->isTransactionStarted = false;
+		}
+	}
 
-    static public function getInstance()
-    {
-        if (!self::$instance) {
-            self::$instance = new TransactionManager();
-        }
+	static public function getInstance() {
+		if ( ! self::$instance ) {
+			self::$instance = new TransactionManager();
+		}
 
-        return self::$instance;
-    }
+		return self::$instance;
+	}
 }
