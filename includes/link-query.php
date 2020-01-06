@@ -112,7 +112,7 @@ class blcLinkQuery {
 	 *
 	 * @return array An array of custom filter definitions. If there are no custom filters defined returns an empty array.
 	 */
-	function load_custom_filters(){
+	function load_custom_filters() {
 		global $wpdb; /** @var wpdb $wpdb */
 
 		$filter_data = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}blc_filters ORDER BY name ASC", ARRAY_A );
@@ -521,7 +521,7 @@ class blcLinkQuery {
 	function get_links( $params = null ) {
 		global $wpdb; /** @var wpdb $wpdb */
 
-		if( ! is_array( $params ) ) {
+		if ( ! is_array( $params ) ) {
 			$params = array();
 		}
 
@@ -536,7 +536,7 @@ class blcLinkQuery {
 			'include_invalid'      => false,
 			'orderby'              => '',
 			'order'                => '',
- 		);
+		);
 
 		$params = array_merge( $defaults, $params );
 
@@ -552,7 +552,7 @@ class blcLinkQuery {
 
 		//Join the blc_instances table if it's required to perform the search.
 		$joins = "";
-		if ( $criteria['join_instances'] ){
+		if ( $criteria['join_instances'] ) {
 			$joins = "JOIN {$wpdb->prefix}blc_instances AS instances ON links.link_id = instances.link_id";
 		}
 
@@ -598,7 +598,7 @@ class blcLinkQuery {
 			   {$order_clause}"; //Note: would be a lot faster without GROUP BY
 
 		//Add the LIMIT clause
-		if ( $params['max_results'] || $params['offset'] ){
+		if ( $params['max_results'] || $params['offset'] ) {
 			$q .= sprintf( "\nLIMIT %d, %d", $params['offset'], $params['max_results'] );
 		}
 
