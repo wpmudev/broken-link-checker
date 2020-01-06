@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Plaintext URLs 
+Plugin Name: Plaintext URLs
 Description: Parse plaintext URLs as links
 Version: 1.0
 Author: Janis Elsts
@@ -13,7 +13,7 @@ ModuleLazyInit: true
 ModulePriority: 800
 */
 
-if ( !class_exists('blcPlaintextUrlBase') ) {
+if ( ! class_exists( 'blcPlaintextUrlBase' ) ) {
 	require_once 'plaintext-url-parser-base.php';
 }
 
