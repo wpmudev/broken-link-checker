@@ -55,7 +55,7 @@ class blcMediaFireChecker extends blcChecker {
 
 		//URLs like http://www.mediafire.com/download.php?03mj0mwmnnm are technically valid,
 		//but they introduce unnecessary redirects.
-		$url = str_replace( 'download.php','', $url );
+		$url = str_replace( 'download.php', '', $url );
 
 		//Since MediaFire doesn't have an API, we just send a HEAD request
 		//and try do divine the file state from the response headers.
@@ -74,7 +74,7 @@ class blcMediaFireChecker extends blcChecker {
 		} else {
 			$result['http_code'] = intval( $rez['response']['code'] );
 
-			if ( $result['http_code'] == 200 ){
+			if ( $result['http_code'] == 200 ) {
 				//200 - OK
 				$result['broken'] = false;
 				$result['log'] .= "File OK";
@@ -91,22 +91,22 @@ class blcMediaFireChecker extends blcChecker {
 					$result['log'] .= "\nFull URL: " . $rez['headers']['location'];
 				} elseif ( strpos( $rez['headers']['location'], 'errno=320' ) !== false ) {
 					$result['status_code'] = BLC_LINK_STATUS_ERROR;
-					$result['status_text'] = __('Not Found', 'broken-link-checker');
+					$result['status_text'] = __( 'Not Found', 'broken-link-checker' );
 					$result['http_code']   = 0;
 					$result['log'] .= "The file is invalid or has been removed.";
 				} elseif ( strpos( $rez['headers']['location'], 'errno=378' ) !== false ) {
 					$result['status_code'] = BLC_LINK_STATUS_ERROR;
-					$result['status_text'] = __('Not Found', 'broken-link-checker');
+					$result['status_text'] = __( 'Not Found', 'broken-link-checker' );
 					$result['http_code']   = 0;
 					$result['log'] .= "The file has been removed due to a violation of MediaFire ToS.";
 				} elseif ( strpos( $rez['headers']['location'], 'errno=388' ) !== false ) {
 					$result['status_code'] = BLC_LINK_STATUS_WARNING;
-					$result['status_text'] = __('Permission Denied', 'broken-link-checker');
+					$result['status_text'] = __( 'Permission Denied', 'broken-link-checker' );
 					$result['http_code']   = 0;
 					$result['log'] .= "Permission denied. Most likely the plugin sent too many requests too quickly. Try again later.";
 				} else {
 					$result['status_code'] = BLC_LINK_STATUS_INFO;
-					$result['status_text'] = __('Unknown Error', 'broken-link-checker');
+					$result['status_text'] = __( 'Unknown Error', 'broken-link-checker' );
 					$result['log'] .= "Unknown error.\n\n";
 					foreach ( $rez['headers'] as $name => $value ) {
 						$result['log'] .= sprintf( "%s: %s\n", $name, $value );
