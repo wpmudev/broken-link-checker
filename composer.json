@@ -1,7 +1,7 @@
 {
-	"name": "mehigh/broken-link-checker",
+	"name": "broken-link-checker",
 	"description": "Broken Link Checker",
-	"type": "wp-cli-package",
+	"type": "wordpress-plugin",
 	"homepage": "https://github.com/wpmudev/broken-link-checker",
 	"license": "MIT",
 	"require": {
