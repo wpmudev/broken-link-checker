@@ -1,5 +1,5 @@
 {
-	"name": "broken-link-checker",
+	"name": "mehigh/broken-link-checker",
 	"description": "Broken Link Checker",
 	"type": "wordpress-plugin",
 	"homepage": "https://github.com/wpmudev/broken-link-checker",
