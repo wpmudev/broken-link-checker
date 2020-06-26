@@ -114,7 +114,7 @@ class blcCachedOptionLogger extends blcLogger {
 	}
 	
 	function save(){
-		update_option($this->option_name, $this->log);
+		update_option($this->option_name, $this->log, false);
 	}
 }
 
