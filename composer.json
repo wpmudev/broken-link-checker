@@ -1,0 +1,27 @@
+{
+	"name": "mehigh/broken-link-checker",
+	"description": "Broken Link Checker",
+	"type": "wp-cli-package",
+	"homepage": "https://github.com/wpmudev/broken-link-checker",
+	"license": "MIT",
+	"require": {
+		"ext-json": "*"
+	},
+	"config": {
+		"platform": {
+			"php": "5.4"
+		},
+		"sort-packages": true
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.x-dev"
+		},
+		"bundled": false
+	},
+	"autoload": {
+		"files": [ "broken-link-checker.php" ]
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
+}
