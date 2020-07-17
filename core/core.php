@@ -525,8 +525,11 @@ class wsBrokenLinkChecker {
 	        $this->conf->options['send_authors_email_notifications'] = $send_authors_email_notifications;
 
 			$this->conf->options['notification_email_address'] = strval($_POST['notification_email_address']);
-			if ( !filter_var($this->conf->options['notification_email_address'], FILTER_VALIDATE_EMAIL)) {
-				$this->conf->options['notification_email_address'] = '';
+			$notification_email_addresses = explode(',', $this->conf->options['notification_email_address']);
+			foreach ($notification_email_addresses as $notification_email_address) {
+				if ( !filter_var($notification_email_address, FILTER_VALIDATE_EMAIL)) {
+					$this->conf->options['notification_email_address'] = '';
+				}
 			}
 
 	        $widget_cap = strval($_POST['dashboard_widget_capability']);
