@@ -13,27 +13,27 @@ ModuleLazyInit: true
 ModulePriority: 110
 */
 
-if ( !class_exists('blcEmbedParserBase') ){
+if ( ! class_exists( 'blcEmbedParserBase' ) ) {
 	require 'embed-parser-base.php';
 }
 
 class blcYouTubeEmbed extends blcEmbedParserBase {
-	
-	function init(){
+
+	function init() {
 		parent::init();
-		$this->short_title = __('YouTube Video', 'broken-link-checker');
-		$this->long_title = __('Embedded YouTube video', 'broken-link-checker');
+		$this->short_title       = __( 'YouTube Video', 'broken-link-checker' );
+		$this->long_title        = __( 'Embedded YouTube video', 'broken-link-checker' );
 		$this->url_search_string = 'youtube.com/v/';
 	}
-	
-	function link_url_from_src($src){
+
+	function link_url_from_src( $src ) {
 		//Extract video ID from the SRC. The ID is always 11 characters.
-		$parts = explode('/', $src);
-		$video_id = substr(	end($parts), 0, 11 );
-		
+		$parts    = explode( '/', $src );
+		$video_id = substr( end( $parts ), 0, 11 );
+
 		//Reconstruct the video permalink based on the ID
-		$url = 'http://www.youtube.com/watch?v='.$video_id;
-		
+		$url = 'http://www.youtube.com/watch?v=' . $video_id;
+
 		return $url;
 	}
 }

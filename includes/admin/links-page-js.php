@@ -8,10 +8,10 @@ function alterLinkCounter(factor, filterId){
 		counter = jQuery('.current-link-count');
 	}
 
-    var cnt = parseInt(counter.eq(0).html(), 10);
-    cnt = cnt + factor;
-    counter.html(cnt);
-    
+	var cnt = parseInt(counter.eq(0).html(), 10);
+	cnt = cnt + factor;
+	counter.html(cnt);
+
 	if ( blc_is_broken_filter ){
 		//Update the broken link count displayed beside the "Broken Links" menu
 		var menuBubble = jQuery('span.blc-menu-bubble');
@@ -24,12 +24,12 @@ function alterLinkCounter(factor, filterId){
 				menuBubble.parent().hide();
 			}
 		}
-	}    
+	}
 }
 
 function replaceLinkId(old_id, new_id){
 	var master = jQuery('#blc-row-'+old_id);
-	
+
 	master.attr('id', 'blc-row-'+new_id);
 	master.find('.blc-link-id').html(new_id);
 	master.find('th.check-column input[type="checkbox"]').val(new_id);
@@ -40,56 +40,56 @@ function replaceLinkId(old_id, new_id){
 
 function reloadDetailsRow(link_id){
 	var details_row = jQuery('#link-details-'+link_id);
-	
-	//Load up the new link info                     (so sue me)    
-	details_row.find('td').html('<center><?php echo esc_js(__('Loading...' , 'broken-link-checker')); ?></center>').load(
-		"<?php echo admin_url('admin-ajax.php'); ?>",
+
+	//Load up the new link info                     (so sue me)
+	details_row.find('td').html('<center><?php echo esc_js( __( 'Loading...', 'broken-link-checker' ) ); ?></center>').on( 'load', function() {
+		"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 		{
 			'action' : 'blc_link_details',
 			'link_id' : link_id
 		}
-	);
+	});
 }
 
 jQuery(function($){
-	
+
 	//The details button - display/hide detailed info about a link
-    $(".blc-details-button, td.column-link-text, td.column-status, td.column-new-link-text").click(function () {
-    	var master = $(this).parents('.blc-row');
-    	var link_id = master.attr('id').split('-')[2];
+	$(".blc-details-button, td.column-link-text, td.column-status, td.column-new-link-text").click(function () {
+		var master = $(this).parents('.blc-row');
+		var link_id = master.attr('id').split('-')[2];
 		$('#link-details-'+link_id).toggle();
 		return false;
-    });
+	});
 
-	var ajaxInProgressHtml = '<?php echo esc_js(__('Wait...', 'broken-link-checker')); ?>';
-	
+	var ajaxInProgressHtml = '<?php echo esc_js( __( 'Wait...', 'broken-link-checker' ) ); ?>';
+
 	//The "Not broken" button - manually mark the link as valid. The link will be checked again later.
 	$(".blc-discard-button").click(function () {
 		var me = $(this);
 		me.html(ajaxInProgressHtml);
-		
+
 		var master = me.parents('.blc-row');
-    	var link_id = master.attr('id').split('-')[2];
-        
-        $.post(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+		var link_id = master.attr('id').split('-')[2];
+
+		$.post(
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_discard',
 				'link_id' : link_id,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_discard'));  ?>'
+				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_discard' ) ); ?>'
 			},
 			function (data, textStatus){
 				if (data == 'OK'){
 					var details = $('#link-details-'+link_id);
-					
+
 					//Remove the "Not broken" action
 					me.parent().remove();
-					
+
 					//Set the displayed link status to OK
 					var classNames = master.attr('class');
 					classNames = classNames.replace(/(^|\s)link-status-[^\s]+(\s|$)/, ' ') + ' link-status-ok';
 					master.attr('class', classNames);
-					
+
 					//Flash the main row green to indicate success, then remove it if the current view
 					//is supposed to show only broken links or warnings.
 					var should_hide_link = blc_is_broken_filter || (blc_current_base_filter == 'warnings');
@@ -102,20 +102,20 @@ jQuery(function($){
 							reloadDetailsRow(link_id);
 						}
 					});
-					
+
 					//Update the elements displaying the number of results for the current filter.
 					if( should_hide_link ){
-                    	alterLinkCounter(-1);
-                    }
+						alterLinkCounter(-1);
+					}
 				} else {
-					me.html('<?php echo esc_js(__('Not broken' , 'broken-link-checker'));  ?>');
+					me.html('<?php echo esc_js( __( 'Not broken', 'broken-link-checker' ) ); ?>');
 					alert(data);
 				}
 			}
 		);
-		
+
 		return false;
-    });
+	});
 
 	//The "Dismiss" button - hide the link from the "Broken" and "Redirects" filters, but still apply link tweaks and so on.
 	$(".blc-dismiss-button").click(function () {
@@ -128,11 +128,11 @@ jQuery(function($){
 		var should_hide_link = $.inArray(blc_current_base_filter, ['broken', 'redirects', 'warnings']) > -1;
 
 		$.post(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_dismiss',
 				'link_id' : link_id,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_dismiss'));  ?>'
+				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_dismiss' ) ); ?>'
 			},
 			function (data, textStatus){
 				if (data == 'OK'){
@@ -175,11 +175,11 @@ jQuery(function($){
 		var should_hide_link = (blc_current_base_filter == 'dismissed');
 
 		$.post(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_undismiss',
 				'link_id' : link_id,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_undismiss'));  ?>'
+				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_undismiss' ) ); ?>'
 			},
 			function (data, textStatus){
 				if (data == 'OK'){
@@ -220,11 +220,11 @@ jQuery(function($){
 		var link_id = master.attr('id').split('-')[2];
 
 		$.post(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_recheck',
 				'link_id' : link_id,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_recheck'));  ?>'
+				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_recheck' ) ); ?>'
 			},
 			function (response){
 				me.html(oldButtonHtml);
@@ -260,11 +260,11 @@ jQuery(function($){
 		var details = $('#link-details-' + linkId);
 
 		$.post(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
+			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 			{
 				'action' : 'blc_deredirect',
 				'link_id' : linkId,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_deredirect'));  ?>'
+				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_deredirect' ) ); ?>'
 			},
 			function (response){
 				me.closest('span').hide();
@@ -367,8 +367,8 @@ jQuery(function($){
 		var linkText = master.data('link-text'),
 			canEditText = master.data('can-edit-text') == 1, //jQuery will convert a '1' to 1 (number) when reading a data attribute.
 			canEditUrl = master.data('can-edit-url') == 1,
-			noneText = '<?php echo esc_js(_x('(None)', 'link text', 'broken-link-checker')); ?>',
-			multipleLinksText = '<?php echo esc_js(_x('(Multiple links)', 'link text', 'broken-link-checker')); ?>';
+			noneText = '<?php echo esc_js( _x( '(None)', 'link text', 'broken-link-checker' ) ); ?>',
+			multipleLinksText = '<?php echo esc_js( _x( '(Multiple links)', 'link text', 'broken-link-checker' ) ); ?>';
 
 		titleInput.prop('readonly', !canEditText);
 		urlInput.prop('readonly', !canEditUrl);
@@ -408,27 +408,27 @@ jQuery(function($){
 		}
 	}
 
-    /**
-     * Hide the inline editor for a particular link.
+	/**
+	 * Hide the inline editor for a particular link.
 	 *
 	 * @param link_id Either a numeric link ID or a jQuery object that represents the editor row.
-     */
+	 */
 	function hideLinkEditor(link_id) {
 		var editRow = isNaN(link_id) ? link_id : $('#blc-edit-row-' + link_id);
 		editRow.prev('tr.blc-row').show();
 		editRow.remove();
 	}
 
-    /**
+	/**
 	 * Find possible replacements for a broken link and display them in a list.
-     *
+	 *
 	 * @param {String} url The current link URL.
 	 * @param suggestionList jQuery object that represents a list element.
-     */
+	 */
 	function findReplacementSuggestions(url, suggestionList) {
-		var searchingText     = '<?php echo esc_js(_x('Searching...', 'link suggestions', 'broken-link-checker')) ?>';
-		var noSuggestionsText = '<?php echo esc_js(_x('No suggestions available.', 'link suggestions', 'broken-link-checker')) ?>';
-		var iaSuggestionName  = '<?php echo esc_js(_x('Archived page from %s (via the Wayback Machine)', 'link suggestions', 'broken-link-checker')); ?>';
+		var searchingText     = '<?php echo esc_js( _x( 'Searching...', 'link suggestions', 'broken-link-checker' ) ); ?>';
+		var noSuggestionsText = '<?php echo esc_js( _x( 'No suggestions available.', 'link suggestions', 'broken-link-checker' ) ); ?>';
+		var iaSuggestionName  = '<?php echo esc_js( _x( 'Archived page from %s (via the Wayback Machine)', 'link suggestions', 'broken-link-checker' ) ); ?>';
 
 		suggestionList.empty().append('<li>' + searchingText + '</li>');
 
@@ -468,14 +468,14 @@ jQuery(function($){
 		);
 	}
 
-    /**
-     * Call our PHP backend and tell it to edit all occurrences of particular link.
+	/**
+	 * Call our PHP backend and tell it to edit all occurrences of particular link.
 	 * Updates UI with the new link info and displays any error messages that might be generated.
 	 *
 	 * @param linkId Either a numeric link ID or a jQuery object representing the link row.
-     * @param {String} newUrl The new link URL.
-     * @param {String} newText The new link text. Optional. Set to null to leave it unchanged.
-     */
+	 * @param {String} newUrl The new link URL.
+	 * @param {String} newText The new link text. Optional. Set to null to leave it unchanged.
+	 */
 	function updateLink(linkId, newUrl, newText) {
 		var master, editRow;
 		if ( isNaN(linkId) ){
@@ -493,13 +493,13 @@ jQuery(function($){
 		updateButton.prop('disabled', true);
 
 		$.post(
-			'<?php echo admin_url('admin-ajax.php'); ?>',
+			'<?php echo admin_url( 'admin-ajax.php' ); ?>',
 			{
 				'action'   : 'blc_edit',
 				'link_id'  : linkId,
 				'new_url'  : newUrl,
 				'new_text' : newText,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_edit'));  ?>'
+				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_edit' ) ); ?>'
 			},
 			function(response) {
 				progressIndicator.hide();
@@ -525,22 +525,22 @@ jQuery(function($){
 
 			if ( response.cnt_okay > 0 ){
 				var fragment = sprintf(
-					'<?php echo esc_js(__('%d instances of the link were successfully modified.', 'broken-link-checker')); ?>',
+					'<?php echo esc_js( __( '%d instances of the link were successfully modified.', 'broken-link-checker' ) ); ?>',
 					response.cnt_okay
 				);
 				msg = msg + fragment + '\n';
 				if ( response.cnt_error > 0 ){
 					fragment = sprintf(
-						'<?php echo esc_js(__("However, %d instances couldn't be edited and still point to the old URL.", 'broken-link-checker')); ?>',
+						'<?php echo esc_js( __( "However, %d instances couldn't be edited and still point to the old URL.", 'broken-link-checker' ) ); ?>',
 						response.cnt_error
 					);
 					msg = msg + fragment + "\n";
 				}
 			} else {
-				msg = msg + '<?php echo esc_js(__('The link could not be modified.', 'broken-link-checker')); ?>\n';
+				msg = msg + '<?php echo esc_js( __( 'The link could not be modified.', 'broken-link-checker' ) ); ?>\n';
 			}
 
-			msg = msg + '\n<?php echo esc_js(__("The following error(s) occurred :", 'broken-link-checker')); ?>\n* ';
+			msg = msg + '\n<?php echo esc_js( __( 'The following error(s) occurred :', 'broken-link-checker' ) ); ?>\n* ';
 			msg = msg + response.errors.join('\n* ');
 
 			alert(msg);
@@ -582,15 +582,15 @@ jQuery(function($){
 		}
 	}
 
-    //The "Edit URL" button - displays the inline editor
-    $(".blc-edit-button").click(function () {
+	//The "Edit URL" button - displays the inline editor
+	$(".blc-edit-button").click(function () {
 		var master = $(this).closest('.blc-row');
-    	var link_id = master.attr('id').split('-')[2];
-        showLinkEditor(link_id);
-    });
-    
-    //Let the user use Enter and Esc as shortcuts for "Update" and "Cancel"
-    $('.blc-inline-editor input[type="text"]').keypress(function (e) {
+		var link_id = master.attr('id').split('-')[2];
+		showLinkEditor(link_id);
+	});
+
+	//Let the user use Enter and Esc as shortcuts for "Update" and "Cancel"
+	$('.blc-inline-editor input[type="text"]').keypress(function (e) {
 		var editRow = $(this).closest('.blc-inline-editor');
 		if (e.which == 13) {
 			editRow.find('.blc-update-link-button').click();
@@ -612,7 +612,7 @@ jQuery(function($){
 		var urlField = editRow.find('.blc-link-url-field');
 		var newUrl = urlField.val();
 		if ($.trim(newUrl) == '') {
-			alert('<?php echo esc_js(__('Error: Link URL must not be empty.', 'broken-link-checker')); ?>');
+			alert('<?php echo esc_js( __( 'Error: Link URL must not be empty.', 'broken-link-checker' ) ); ?>');
 			urlField.focus();
 			return;
 		}
@@ -631,11 +631,11 @@ jQuery(function($){
 		updateLink(master, newUrl, newLinkText);
 	});
 
-    //The "Cancel" in the inline editor.
-    $(".blc-cancel-button").click(function () { 
+	//The "Cancel" in the inline editor.
+	$(".blc-cancel-button").click(function () {
 		var editRow = $(this).closest('tr');
 		hideLinkEditor(editRow);
-    });
+	});
 
 	//The "Use this URL" button in the inline editor replaces the link URL
 	//with the selected suggestion URL.
@@ -646,89 +646,94 @@ jQuery(function($){
 	});
 
 
-    //The "Unlink" button - remove the link/image from all posts, custom fields, etc.
-    $(".blc-unlink-button").click(function () { 
-    	var me = this;
-    	var master = $(me).parents('.blc-row');
-		$(me).html('<?php echo esc_js(__('Wait...' , 'broken-link-checker')); ?>');
-		
-		//Find the link ID
-    	var link_id = master.attr('id').split('-')[2];
-        
-        $.post(
-			"<?php echo admin_url('admin-ajax.php'); ?>",
-			{
-				'action' : 'blc_unlink',
-				'link_id' : link_id,
-				'_ajax_nonce' : '<?php echo esc_js(wp_create_nonce('blc_unlink'));  ?>'
-			},
-			function (data, textStatus){
-				eval('data = ' + data);
-				 
-				if ( data && (typeof(data['error']) != 'undefined') ){
-					//An internal error occurred before the link could be edited.
-					//data.error is an error message.
-					alert(data.error);
-				} else {
-					if ( data.errors.length == 0 ){
-						//The link was successfully removed. Hide its details. 
-						$('#link-details-'+link_id).hide();
-						//Flash the main row green to indicate success, then hide it.
-						var oldColor = master.css('background-color');
-						master.animate({ backgroundColor: "#E0FFB3" }, 200).animate({ backgroundColor: oldColor }, 300, function(){
-							master.hide();
-						});
-						
-						alterLinkCounter(-1);
-						
-						return;
+	//The "Unlink" button - remove the link/image from all posts, custom fields, etc.
+	$(".blc-unlink-button").click(function () {
+		var me = this;
+		var master = $(me).parents('.blc-row');
+
+		var confirm_msg = "<?php echo esc_js( __( 'Are you sure you want to unlink and remove this link from all posts?', 'broken-link-checker' ) ); ?>";
+
+		if( confirm( confirm_msg ) ) {
+			//Find the link ID
+			var link_id = master.attr('id').split('-')[2];
+			$(me).html('<?php echo esc_js( __( 'Wait...', 'broken-link-checker' ) ); ?>');
+
+			$.post(
+				"<?php echo admin_url( 'admin-ajax.php' ); ?>",
+				{
+					'action' : 'blc_unlink',
+					'link_id' : link_id,
+					'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_unlink' ) ); ?>'
+				},
+				function (data, textStatus){
+					eval('data = ' + data);
+
+					if ( data && (typeof(data['error']) != 'undefined') ){
+						//An internal error occurred before the link could be edited.
+						//data.error is an error message.
+						alert(data.error);
 					} else {
-						//Build and display an error message.
-						var msg = '';
-						
-						if ( data.cnt_okay > 0 ){
-							msg = msg + sprintf(
-								'<?php echo esc_js(__("%d instances of the link were successfully unlinked.", 'broken-link-checker')); ?>\n', 
-								data.cnt_okay
-							);
-							
-							if ( data.cnt_error > 0 ){
-								msg = msg + sprintf(
-									'<?php echo esc_js(__("However, %d instances couldn't be removed.", 'broken-link-checker')); ?>\n',
-									data.cnt_error
-								);
-							}
+						if ( data.errors.length == 0 ){
+							//The link was successfully removed. Hide its details.
+							$('#link-details-'+link_id).hide();
+							//Flash the main row green to indicate success, then hide it.
+							var oldColor = master.css('background-color');
+							master.animate({ backgroundColor: "#E0FFB3" }, 200).animate({ backgroundColor: oldColor }, 300, function(){
+								master.hide();
+							});
+
+							alterLinkCounter(-1);
+
+							return;
 						} else {
-							msg = msg + '<?php echo esc_js(__("The plugin failed to remove the link.", 'broken-link-checker')); ?>\n';
+							//Build and display an error message.
+							var msg = '';
+
+							if ( data.cnt_okay > 0 ){
+								msg = msg + sprintf(
+									'<?php echo esc_js( __( '%d instances of the link were successfully unlinked.', 'broken-link-checker' ) ); ?>\n',
+									data.cnt_okay
+								);
+
+								if ( data.cnt_error > 0 ){
+									msg = msg + sprintf(
+										'<?php echo esc_js( __( "However, %d instances couldn't be removed.", 'broken-link-checker' ) ); ?>\n',
+										data.cnt_error
+									);
+								}
+							} else {
+								msg = msg + '<?php echo esc_js( __( 'The plugin failed to remove the link.', 'broken-link-checker' ) ); ?>\n';
+							}
+
+							msg = msg + '\n<?php echo esc_js( __( 'The following error(s) occured :', 'broken-link-checker' ) ); ?>\n* ';
+							msg = msg + data.errors.join('\n* ');
+
+							//Show the error message
+							alert(msg);
 						}
-														
-						msg = msg + '\n<?php echo esc_js(__("The following error(s) occured :", 'broken-link-checker')); ?>\n* ';
-						msg = msg + data.errors.join('\n* ');
-						
-						//Show the error message
-						alert(msg);
-					}				
+					}
+
+					$(me).html('<?php echo esc_js( __( 'Unlink', 'broken-link-checker' ) ); ?>');
 				}
-				
-				$(me).html('<?php echo esc_js(__('Unlink' , 'broken-link-checker')); ?>'); 
-			}
-		);
-    });
-    
-    //--------------------------------------------
-    //The search box(es)
-    //--------------------------------------------
-    
-    var searchForm = $('#search-links-dialog');
-	    
-    searchForm.dialog({
+			);
+
+		}
+	});
+
+	//--------------------------------------------
+	//The search box(es)
+	//--------------------------------------------
+
+	var searchForm = $('#search-links-dialog');
+
+	searchForm.dialog({
 		autoOpen : false,
 		dialogClass : 'blc-search-container',
 		resizable: false
 	});
 
-    $('#blc-open-search-box').click(function(){
-    	if ( searchForm.dialog('isOpen') ){
+	$('#blc-open-search-box').click(function(){
+		if ( searchForm.dialog('isOpen') ){
 			searchForm.dialog('close');
 		} else {
 			searchForm
@@ -741,69 +746,69 @@ jQuery(function($){
 				});
 		}
 	});
-	
+
 	$('#blc-cancel-search').click(function(){
 		searchForm.dialog('close');
 	});
-	
+
 	//The "Save This Search Query" button creates a new custom filter based on the current search
 	$('#blc-create-filter').click(function(){
-		var filter_name = prompt("<?php echo esc_js(__("Enter a name for the new custom filter", 'broken-link-checker')); ?>", "");
+		var filter_name = prompt("<?php echo esc_js( __( 'Enter a name for the new custom filter', 'broken-link-checker' ) ); ?>", "");
 		if ( filter_name ){
 			$('#blc-custom-filter-name').val(filter_name);
 			$('#custom-filter-form').submit();
 		}
 	});
-	
-	//Display a confirmation dialog when the user clicks the "Delete This Filter" button 
+
+	//Display a confirmation dialog when the user clicks the "Delete This Filter" button
 	$('#blc-delete-filter').click(function(){
 		var message = '<?php
 		echo esc_js(
 			html_entity_decode(
-				__("You are about to delete the current filter.\n'Cancel' to stop, 'OK' to delete", 'broken-link-checker'),
+				__( "You are about to delete the current filter.\n'Cancel' to stop, 'OK' to delete", 'broken-link-checker' ),
 				ENT_QUOTES,
-				get_bloginfo('charset')
+				get_bloginfo( 'charset' )
 			)
 		);
 		?>';
 		return confirm(message);
 	});
-	
+
 	//--------------------------------------------
-    // Bulk actions
-    //--------------------------------------------
-    
-    $('#blc-bulk-action-form').submit(function(){
-    	var action = $('#blc-bulk-action').val(), message;
-    	if ( action ==  '-1' ){
+	// Bulk actions
+	//--------------------------------------------
+
+	$('#blc-bulk-action-form').submit(function(){
+		var action = $('#blc-bulk-action').val(), message;
+		if ( action ==  '-1' ){
 			action = $('#blc-bulk-action2').val();
 		}
-    	
-    	if ( action == 'bulk-delete-sources' ){
-    		//Convey the gravitas of deleting link sources.
-    		message = '<?php
-				echo esc_js(  
+
+		if ( action == 'bulk-delete-sources' ){
+			//Convey the gravitas of deleting link sources.
+			message = '<?php
+				echo esc_js(
 					html_entity_decode(
-						__("Are you sure you want to delete all posts, bookmarks or other items that contain any of the selected links? This action can't be undone.\n'Cancel' to stop, 'OK' to delete", 'broken-link-checker'),
+						__( "Are you sure you want to delete all posts, bookmarks or other items that contain any of the selected links? This action can't be undone.\n'Cancel' to stop, 'OK' to delete", 'broken-link-checker' ),
 						ENT_QUOTES,
-						get_bloginfo('charset')
+						get_bloginfo( 'charset' )
 					)
-				); 
-			?>'; 
+				);
+				?>';
 			if ( !confirm(message) ){
 				return false;
 			}
 		} else if ( action == 'bulk-unlink' ){
 			//Likewise for unlinking.
 			message = '<?php
-				echo esc_js(  
+				echo esc_js(
 					html_entity_decode(
-						__("Are you sure you want to remove the selected links? This action can't be undone.\n'Cancel' to stop, 'OK' to remove", 'broken-link-checker'),
+						__( "Are you sure you want to remove the selected links? This action can't be undone.\n'Cancel' to stop, 'OK' to remove", 'broken-link-checker' ),
 						ENT_QUOTES,
-						get_bloginfo('charset')
+						get_bloginfo( 'charset' )
 					)
-				); 
-			?>'; 
+				);
+				?>';
 			if ( !confirm(message) ){
 				return false;
 			}
@@ -827,24 +832,24 @@ jQuery(function($){
 		bulkAction.find('option[value="bulk-deredirect"]').prop('disabled', !redirectsSelected);
 		bulkAction.find('option[value="bulk-not-broken"]').prop('disabled', !brokenLinksSelected);
 	});
-	
+
 	//------------------------------------------------------------
-    // Manipulate highlight settings for permanently broken links
-    //------------------------------------------------------------
-    var highlight_permanent_failures_checkbox = $('#highlight_permanent_failures');
+	// Manipulate highlight settings for permanently broken links
+	//------------------------------------------------------------
+	var highlight_permanent_failures_checkbox = $('#highlight_permanent_failures');
 	var failure_duration_threshold_input = $('#failure_duration_threshold');
-	
-    //Apply/remove highlights when the checkbox is (un)checked
-    highlight_permanent_failures_checkbox.change(function(){
-    	//save_highlight_settings();
-    	
+
+	//Apply/remove highlights when the checkbox is (un)checked
+	highlight_permanent_failures_checkbox.change(function(){
+		//save_highlight_settings();
+
 		if ( this.checked ){
 			$('#blc-links tr.blc-permanently-broken').addClass('blc-permanently-broken-hl');
 		} else {
 			$('#blc-links tr.blc-permanently-broken').removeClass('blc-permanently-broken-hl');
 		}
 	});
-	
+
 	//Apply/remove highlights when the duration threshold is changed.
 	failure_duration_threshold_input.change(function(){
 		var new_threshold = parseInt($(this).val());
@@ -852,9 +857,9 @@ jQuery(function($){
 		if (isNaN(new_threshold) || (new_threshold < 1)) {
 			return;
 		}
-		
+
 		highlight_permanent_failures = highlight_permanent_failures_checkbox.is(':checked');
-		
+
 		$('#blc-links tr.blc-row').each(function(index){
 			var days_broken = $(this).attr('data-days-broken');
 			if ( days_broken >= new_threshold ){
@@ -867,7 +872,7 @@ jQuery(function($){
 			}
 		});
 	});
-	
+
 	//Show/hide table columns dynamically
 	$('#blc-column-selector input[type="checkbox"]').change(function(){
 		var checkbox = $(this);
@@ -877,27 +882,27 @@ jQuery(function($){
 		} else {
 			$('td.column-'+column_id+', th.column-'+column_id, '#blc-links').addClass('hidden');
 		}
-		
-		//Recalculate colspan's for detail rows to take into account the changed number of 
+
+		//Recalculate colspan's for detail rows to take into account the changed number of
 		//visible columns. Otherwise you can get some ugly layout glitches.
 		$('#blc-links tr.blc-link-details td').attr(
-			'colspan', 
+			'colspan',
 			$('#blc-column-selector input[type="checkbox"]:checked').length+1
 		);
 	});
-	
-	//Unlike other fields in "Screen Options", the links-per-page setting 
+
+	//Unlike other fields in "Screen Options", the links-per-page setting
 	//is handled using straight form submission (POST), not AJAX.
 	$('#blc-per-page-apply-button').click(function(){
-		$('#adv-settings').submit();	
+		$('#adv-settings').submit();
 	});
-	
+
 	$('#blc_links_per_page').keypress(function(e){
 		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
 			$('#adv-settings').submit();
-		}	
+		}
 	});
-	
+
 	//Toggle status code colors when the corresponding checkbox is toggled
 	$('#table_color_code_status').click(function(){
 		if ( $(this).is(':checked') ){
@@ -906,8 +911,8 @@ jQuery(function($){
 			$('#blc-links').removeClass('color-code-link-status');
 		}
 	});
-	
-	//Show the bulk edit/find & replace form when the user applies the appropriate bulk action 
+
+	//Show the bulk edit/find & replace form when the user applies the appropriate bulk action
 	$('#doaction, #doaction2').click(function(e){
 		var n = $(this).attr('id').substr(2);
 		if ( $('select[name="'+n+'"]').val() == 'bulk-edit' ) {
@@ -918,24 +923,24 @@ jQuery(function($){
 			}
 		}
 	});
-	
+
 	//Hide the bulk edit/find & replace form when "Cancel" is clicked
 	$('#bulk-edit .cancel').click(function(){
 		$('#bulk-edit').hide();
 		return false;
 	});
-	
+
 	//Minimal input validation for the bulk edit form
 	$('#bulk-edit input[type="submit"]').click(function(e){
 		if( $('#bulk-edit input[name="search"]').val() == '' ){
-			alert('<?php echo esc_js(__('Enter a search string first.', 'broken-link-checker')); ?>');
+			alert('<?php echo esc_js( __( 'Enter a search string first.', 'broken-link-checker' ) ); ?>');
 			$('#bulk-edit input[name="search"]').focus();
 			e.preventDefault();
 			return;
 		}
-		
+
 		if ($('tbody th.check-column input:checked').length == 0){
-			alert('<?php echo esc_js(__('Select one or more links to edit.', 'broken-link-checker')); ?>');
+			alert('<?php echo esc_js( __( 'Select one or more links to edit.', 'broken-link-checker' ) ); ?>');
 			e.preventDefault();
 		}
 	});
